@@ -23,13 +23,13 @@ return [
     /*
      * The class name of the media model that should be used.
      */
-    'media_model' => Spatie\MediaLibrary\Media::class,
+    'media_model' => App\Media::class,
 
     /*
      * The engine that should perform the image conversions.
      * Should be either `gd` or `imagick`.
      */
-    'image_driver' => 'gd',
+    'image_driver' => 'imagick',
 
     /*
      * When urls to files get generated, this class will be called. Leave empty
