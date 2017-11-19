@@ -15,7 +15,13 @@ class CreatePlacesTable extends Migration
     {
         Schema::create('places', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->string('name');
+            $table->point('location');
             $table->timestamps();
+
+            $table->spatialIndex('location');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
