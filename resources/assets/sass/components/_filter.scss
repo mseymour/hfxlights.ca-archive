@@ -1,0 +1,50 @@
+.filter {
+    padding: $spacer;
+    background-color: $secondary;
+}
+
+.filter__options {
+    display: flex;
+    flex-direction: row;
+    align-content: stretch;
+}
+
+.filter__option {
+    flex: 1 0 0;
+}
+
+.filter__button {
+    @extend .btn;
+    @include button-variant($primary, $primary);
+}
+
+.filter__search {
+    user-select: auto;
+    width: 100%;
+    &::before {
+        content: 'aaaaa';
+    }
+    &::placeholder {
+        opacity: 1;
+        color: inherit;
+        font: inherit;
+    }
+    &:not(:placeholder-shown), &:focus {
+        color: $input-color;
+        background-color: $input-bg;
+        background-clip: padding-box;
+        border: $input-btn-border-width solid $input-border-color;
+        @include transition($input-transition);
+
+        // Customize the `:focus` state to imitate native WebKit styles.
+        @include form-control-focus();
+    }
+}
+
+.filter__submit {
+    width: 1px;
+    height: 1px;
+    position: absolute;
+    opacity: 0;
+    user-select: none;
+}
