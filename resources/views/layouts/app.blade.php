@@ -12,6 +12,7 @@
     <title>{{ config('app.name', 'HFXLights') }}</title>
 
     <!-- Styles -->
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   </head>
   <body>

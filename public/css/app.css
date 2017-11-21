@@ -9810,6 +9810,39 @@ a.text-dark:hover {
   visibility: hidden !important;
 }
 
+.overlay-nav {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.overlay-nav__search {
+  -ms-flex-item-align: center;
+      align-self: center;
+}
+
+.map__container {
+  z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  bottom: 0;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
 .filter {
   padding: 1rem;
   background-color: #868e96;
@@ -9825,6 +9858,10 @@ a.text-dark:hover {
           flex-direction: row;
   -ms-flex-line-pack: stretch;
       align-content: stretch;
+}
+
+.filter__options > * + * {
+  margin-left: 1rem;
 }
 
 .filter__option {
