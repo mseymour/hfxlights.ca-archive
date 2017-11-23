@@ -16,7 +16,7 @@
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
   </head>
   <body>
-    <div id="app">
+    <div id="app" class="container-fluid">
         @include('layouts._header')
         @yield('content')
         @include('layouts._footer')
