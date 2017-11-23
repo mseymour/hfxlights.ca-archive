@@ -8952,21 +8952,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* WEBPACK VAR INJECTION */(function($) {/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mapbox_gl__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_mapbox_gl___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_mapbox_gl__);
 __webpack_require__(11);
+__webpack_require__(41);
 
 
 
 __WEBPACK_IMPORTED_MODULE_0_mapbox_gl___default.a.accessToken = 'pk.eyJ1IjoibWFya3NleW1vdXIiLCJhIjoiY2phOTB0YndoMDJ5ejMybmNheGJlc294MyJ9.nr0mzYdRzGFNBQUrJLBZMQ';
 
 var map = new __WEBPACK_IMPORTED_MODULE_0_mapbox_gl___default.a.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v9',
-    attributionControl: false,
-    center: [-63.571389, 44.647778],
-    zoom: 13
+  container: 'map',
+  style: 'mapbox://styles/mapbox/streets-v9',
+  attributionControl: false,
+  center: [-63.571389, 44.647778],
+  zoom: 13
 });
 
 $(function () {
-    map.resize();
+  $('.filter__button--geo').on('click', function (e) {
+    hfxLights.getPreciseLocation().then(function (position) {
+      map.flyTo({
+        center: [position.coords.longitude, position.coords.latitude]
+      }).then(function () {
+        console.log('test: map.flyto complete!  (Load points, pop-up point list)');
+      });
+    }).then(function () {
+      console.log('test: getPreciseLocation & map.flyto complete! (Load points, pop-up point list)');
+    });;
+  });
+
+  $('.filter__option--address').on('submit', function (e) {
+    e.preventDefault();
+    console.log('test: ');
+  });
 });
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(2)))
 
@@ -16970,6 +16986,31 @@ module.exports={"$version":8,"$root":{"version":{"required":true,"type":"enum","
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */
+/***/ (function(module, exports) {
+
+window.hfxLights = {
+  getPreciseLocation: function getPreciseLocation() {
+    return new Promise(function (resolve, reject) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        resolve([position.coords.latitude, position.coords.longitude]);
+      });
+    });
+  },
+  geocodeAddress: function geocodeAddress(address) {
+    // stub
+  },
+  retrievePointsByBoundingBox: function retrievePointsByBoundingBox(boundingBox) {
+    // stub
+  }
+};
 
 /***/ })
 /******/ ]);
