@@ -11,11 +11,27 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.autoload({
+mix.webpackConfig({
+    module: {
+      rules: [{
+        test: /\.js$/,
+        exclude: /node_modules/,
+        enforce: 'pre',
+        loader: 'eslint-loader',
+      }, ],
+    },
+    plugins: [
+      new webpack.ProvidePlugin({
+        Popper: ['popper.js', 'default'],
+      }),
+    ],
+  }).autoload({
     lodash: ['window._'],
     axios: ['window.axios'],
     'jquery/dist/jquery.slim': ['$', 'jQuery', 'window.jQuery'],
     'popper.js/dist/umd/popper.js': ['Popper']
   })
-   .js('resources/assets/js/app.js', 'public/js')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+  .js('resources/assets/js/app.js', 'public/js')
+  .sass('resources/assets/sass/app.scss', 'public/css')
+  .version()
+  .sourceMaps();
