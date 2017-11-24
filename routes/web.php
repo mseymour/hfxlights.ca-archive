@@ -15,4 +15,5 @@ Route::get('/', 'HomeController');
 
 Auth::routes();
 
-Route::resource('places', 'PlacesController')->only(['index', 'create', 'store', 'show']);
+Route::resource('places', 'PlaceController')->only(['index', 'create', 'store', 'show']);
+Route::resource('places/{place}/favourite', 'FavouriteController')->only(['store', 'destroy']);
