@@ -12,11 +12,11 @@ const map = new mapboxgl.Map({
   zoom: 13,
 });
 
+const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder');
+
 map.on('load', () => {
   axios.get('/places')
     .then((response) => {
-      // eslint-disable-next-line
-      console.log(response.data.data);
       map.addSource('places', {
         type: 'geojson',
         data: response.data.data,
@@ -76,7 +76,26 @@ $(() => {
   });
 
   $('.filter__option--address').on('submit', (e) => {
+    const geocoder = new MapboxGeocoder({ accessToken: mapboxgl.accessToken });
+    const searchBox = $('.filter__search', e.target);
     e.preventDefault();
-    console.log('test: ');
+    map.addControl(geocoder);
+    geocoder
+      .setProximity({ longitude: map.getCenter().lng, latitude: map.getCenter().lat })
+      .on('loading', (query) => {
+        searchBox.prop('disabled', true);
+        console.log('geocoder Loading query:', query);
+      })
+      .on('results', (results) => {
+        map.removeControl(geocoder);
+        searchBox.prop('disabled', false);
+        console.log('geocoder results:', results);
+      })
+      .on('error', (error) => {
+        map.removeControl(geocoder);
+        searchBox.prop('disabled', false);
+        console.log('geocoder error:', error);
+      });
+    console.log(geocoder.query(searchBox.prop('value')));
   });
 });

@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row d-none">
     <div class="col-sm">
         <p>@lang('app.footer')</p>
     </div>
