@@ -17,9 +17,11 @@ const map = new mapboxgl.Map({
 map.on('load', () => {
   window.axios.get('/places')
     .then((response) => {
+      // eslint-disable-next-line
+      console.log(response.data.data);
       map.addSource('places', {
         type: 'geojson',
-        data: response,
+        data: response.data.data,
       }).addLayer({
         id: 'places',
         type: 'circle',
@@ -33,6 +35,25 @@ map.on('load', () => {
         },
       });
     });
+});
+
+// When a click event occurs on a feature in the places layer, open a popup at the
+// location of the feature, with description HTML from its properties.
+map.on('click', 'places', (e) => {
+  new mapboxgl.Popup()
+    .setLngLat(e.features[0].geometry.coordinates)
+    .setHTML(e.features[0].properties.title)
+    .addTo(map);
+});
+
+// Change the cursor to a pointer when the mouse is over the places layer.
+map.on('mouseenter', 'places', () => {
+  map.getCanvas().style.cursor = 'pointer';
+});
+
+// Change it back to a pointer when it leaves.
+map.on('mouseleave', 'places', () => {
+  map.getCanvas().style.cursor = '';
 });
 
 $(() => {

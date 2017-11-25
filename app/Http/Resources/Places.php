@@ -15,10 +15,23 @@ class Places extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection,
-            'links' => [
-                'self' => 'link-value',
-            ],
+            'type' => 'FeatureCollection',
+            'features' => $this->collection->transform(function ($place) {
+                return [
+                    'type' => 'Feature',
+                    'geometry' => [
+                        'type' => 'Point',
+                        'coordinates' => [
+                            $place->location->getLng(),
+                            $place->location->getLat(),
+                        ],
+                    ],
+                    'properties' => [
+                        'title' => $place->name,
+                        'description' => $place->description,
+                    ],
+                ];
+            })->toArray(),
         ];
     }
 }
