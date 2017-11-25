@@ -1,6 +1,4 @@
 /* eslint-disable no-console */
-import mapboxgl from 'mapbox-gl';
-
 require('./bootstrap');
 require('./hfxlights');
 
@@ -15,7 +13,7 @@ const map = new mapboxgl.Map({
 });
 
 map.on('load', () => {
-  window.axios.get('/places')
+  axios.get('/places')
     .then((response) => {
       // eslint-disable-next-line
       console.log(response.data.data);
@@ -40,9 +38,11 @@ map.on('load', () => {
 // When a click event occurs on a feature in the places layer, open a popup at the
 // location of the feature, with description HTML from its properties.
 map.on('click', 'places', (e) => {
+  const source = document.getElementById('mapPopup').innerHTML;
+  const template = handlebars.compile(source);
   new mapboxgl.Popup()
     .setLngLat(e.features[0].geometry.coordinates)
-    .setHTML(e.features[0].properties.title)
+    .setHTML(template(e.features[0].properties))
     .addTo(map);
 });
 

@@ -29,6 +29,9 @@ class Places extends ResourceCollection
                     'properties' => [
                         'title' => $place->name,
                         'description' => $place->description,
+                        'id' => $place->getKey(),
+                        'type' => $place->getMorphClass(),
+                        'url' => route('places.show', [$place->getRouteKey()]),
                     ],
                 ];
             })->toArray(),

@@ -27,10 +27,12 @@ mix.webpackConfig({
       }),
     ],
   }).autoload({
-    lodash: ['window._'],
-    axios: ['window.axios'],
+    'mapbox-gl': ['mapboxgl'],
+    'handlebars/dist/handlebars.min': ['handlebars'],
+    lodash: ['_'],
+    axios: ['axios', 'window.axios'],
     'jquery/dist/jquery.slim': ['$', 'jQuery', 'window.jQuery'],
-    'popper.js/dist/umd/popper.js': ['Popper']
+    'popper.js/dist/umd/popper': ['Popper']
   })
   .js('resources/assets/js/app.js', 'public/js')
   .sass('resources/assets/sass/app.scss', 'public/css')

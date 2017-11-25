@@ -12,5 +12,6 @@
             </form>
         </div>
     </div>
+    @include('layouts.handlebars.map_popup')
 </div>
 @endsection

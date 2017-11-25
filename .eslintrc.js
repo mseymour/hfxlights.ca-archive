@@ -13,5 +13,8 @@ module.exports = {
     "globals": {
         "_": true,
         "hfxLights": true,
+        "mapboxgl": true,
+        "handlebars": true,
+        "axios": true,
     },
 };
