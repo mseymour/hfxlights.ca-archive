@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Place;
+use App\Http\Resources\Places;
 use Illuminate\Http\Request;
 
 class PlaceController extends Controller
@@ -14,7 +15,11 @@ class PlaceController extends Controller
      */
     public function index()
     {
-        return redirect('/');
+        if (request()->ajax()) {
+            return new Places(Place::all());
+        } else {
+            return redirect('/');
+        }
     }
 
     /**

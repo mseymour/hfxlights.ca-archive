@@ -5,6 +5,7 @@ namespace App;
 use App\Traits\Taggable;
 use App\Traits\Favouriteable;
 use App\Traits\Reportable;
+use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Place extends Model
@@ -12,6 +13,7 @@ class Place extends Model
     use Taggable;
     use Favouriteable;
     use Reportable;
+    use SpatialTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -19,4 +21,13 @@ class Place extends Model
      * @var array
      */
     protected $fillable = ['name', 'location'];
+
+    /**
+     * The attributes that are spatial-based
+     *
+     * @var array
+     */
+    protected $spatialFields = [
+        'location',
+    ];
 }

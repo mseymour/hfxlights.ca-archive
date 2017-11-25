@@ -14,6 +14,27 @@ const map = new mapboxgl.Map({
   zoom: 13,
 });
 
+map.on('load', () => {
+  window.axios.get('/places')
+    .then((response) => {
+      map.addSource('places', {
+        type: 'geojson',
+        data: response,
+      }).addLayer({
+        id: 'places',
+        type: 'circle',
+        source: 'places',
+        layout: {
+          visibility: 'visible',
+        },
+        paint: {
+          'circle-radius': 8,
+          'circle-color': 'rgba(55,148,179,1)',
+        },
+      });
+    });
+});
+
 $(() => {
   // eslint-disable-next-line
   $('.filter__button--geo').on('click', (e) => {
