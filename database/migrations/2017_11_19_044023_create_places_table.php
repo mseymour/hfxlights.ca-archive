@@ -17,6 +17,7 @@ class CreatePlacesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned()->nullable();
             $table->string('name');
+            $table->text('description');
             $table->point('location');
             $table->timestamps();
 
