@@ -12,8 +12,6 @@ const map = new mapboxgl.Map({
   zoom: 13,
 });
 
-const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder');
-
 map.on('load', () => {
   axios.get('/places')
     .then((response) => {
@@ -32,7 +30,8 @@ map.on('load', () => {
           'circle-color': 'rgba(55,148,179,1)',
         },
       });
-    });
+    })
+    .catch(hfxLights.handleAxiosError);
 });
 
 // When a click event occurs on a feature in the places layer, open a popup at the
@@ -76,26 +75,20 @@ $(() => {
   });
 
   $('.filter__option--address').on('submit', (e) => {
-    const geocoder = new MapboxGeocoder({ accessToken: mapboxgl.accessToken });
     const searchBox = $('.filter__search', e.target);
     e.preventDefault();
-    map.addControl(geocoder);
-    geocoder
-      .setProximity({ longitude: map.getCenter().lng, latitude: map.getCenter().lat })
-      .on('loading', (query) => {
-        searchBox.prop('disabled', true);
-        console.log('geocoder Loading query:', query);
+    searchBox.prop('disabled', true);
+    axios
+      .post($(e.target).prop('action'), {
+        term: searchBox.prop('value'),
       })
-      .on('results', (results) => {
-        map.removeControl(geocoder);
-        searchBox.prop('disabled', false);
-        console.log('geocoder results:', results);
+      .then((response) => {
+        // do things with Response
+        console.log(response);
       })
-      .on('error', (error) => {
-        map.removeControl(geocoder);
+      .catch(hfxLights.handleAxiosError)
+      .then(() => {
         searchBox.prop('disabled', false);
-        console.log('geocoder error:', error);
       });
-    console.log(geocoder.query(searchBox.prop('value')));
   });
 });

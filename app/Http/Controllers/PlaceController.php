@@ -18,8 +18,7 @@ class PlaceController extends Controller
         if (request()->ajax()) {
             return new Places(Place::all());
         } else {
-            return new Places(Place::all());
-            // return redirect('/');
+            return redirect('/');
         }
     }
 

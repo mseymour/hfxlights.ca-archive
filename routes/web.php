@@ -23,3 +23,4 @@ Route::middleware('auth')->prefix('profile')->name('profile.')->group(function (
 
 Route::resource('places', 'PlaceController')->only(['index', 'create', 'store', 'show']);
 Route::resource('places/{place}/favourite', 'FavouriteController')->only(['store', 'destroy']);
+Route::post('places/search', 'PlaceSearchController')->name('places.search');

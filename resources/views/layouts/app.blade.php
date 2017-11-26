@@ -13,7 +13,7 @@
 
     <!-- Styles -->
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.1/mapbox-gl.css" rel="stylesheet">
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
   </head>
   <body>
     <div id="app" class="container-fluid">
@@ -22,6 +22,6 @@
         @include('layouts._footer')
     </div>
 
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ mix('js/app.js') }}"></script>
   </body>
 </html>
