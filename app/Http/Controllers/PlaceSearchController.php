@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Place;
+use App\Http\Resources\Places;
 use Illuminate\Http\Request;
 
 class PlaceSearchController extends Controller
@@ -16,7 +17,7 @@ class PlaceSearchController extends Controller
     public function __invoke(Request $request)
     {
         if (request()->ajax()) {
-            return new Places(Place::all());
+            return new Places(Place::limit(8)->get());
         } else {
             return redirect('/');
         }

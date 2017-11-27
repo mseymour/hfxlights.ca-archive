@@ -1,6 +1,9 @@
 .filter {
-    padding: $spacer;
-    background-color: $secondary;
+    padding: {
+        left: $spacer;
+        right: $spacer;
+        bottom: $spacer;
+    };
 }
 
 .filter__options {

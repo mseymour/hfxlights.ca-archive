@@ -1,6 +1,13 @@
 /* eslint-disable no-console */
 
 window.hfxLights = {
+  getPreciseLocation() {
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        resolve([position.coords.latitude, position.coords.longitude]);
+      });
+    });
+  },
   handleAxiosError(error) {
     if (error.response) {
       // The request was made and the server responded with a status code
@@ -19,17 +26,26 @@ window.hfxLights = {
     }
     console.log(error.config);
   },
-  getPreciseLocation() {
-    return new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition((position) => {
-        resolve([position.coords.latitude, position.coords.longitude]);
-      });
-    });
-  },
   // geocodeAddress(address) {
   //   // stub
   // },
   // retrievePointsByBoundingBox(boundingBox) {
   //   // stub
   // },
+};
+
+window.hfxLights.search = {
+  resultsElement: null,
+  popup(searchResults, popupReference) {
+    handlebars.registerPartial('placeItem', document.getElementById('placeItem').innerHTML);
+    const source = document.getElementById('placeItems').innerHTML;
+    const template = handlebars.compile(source);
+    const content = $(template({ searchResults }));
+    if (this.resultsElement !== null) {
+      this.resultsElement.replace(content);
+    } else {
+      $(popupReference).parents('#mapHud').append(content);
+      this.resultsElement = content;
+    }
+  },
 };

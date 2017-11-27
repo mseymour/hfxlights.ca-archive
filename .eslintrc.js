@@ -16,5 +16,6 @@ module.exports = {
         "mapboxgl": true,
         "handlebars": true,
         "axios": true,
+        "Popper": true,
     },
 };

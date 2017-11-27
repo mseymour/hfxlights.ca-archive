@@ -37,7 +37,7 @@ map.on('load', () => {
 // When a click event occurs on a feature in the places layer, open a popup at the
 // location of the feature, with description HTML from its properties.
 map.on('click', 'places', (e) => {
-  const source = document.getElementById('mapPopup').innerHTML;
+  const source = document.getElementById('placeItem').innerHTML;
   const template = handlebars.compile(source);
   new mapboxgl.Popup()
     .setLngLat(e.features[0].geometry.coordinates)
@@ -84,9 +84,9 @@ $(() => {
       })
       .then((response) => {
         // do things with Response
-        console.log(response);
+        window.hfxLights.search.popup(response.data.data.features, searchBox.get(0));
       })
-      .catch(hfxLights.handleAxiosError)
+      // .catch(hfxLights.handleAxiosError)
       .then(() => {
         searchBox.prop('disabled', false);
       });
