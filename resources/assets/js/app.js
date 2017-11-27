@@ -41,7 +41,7 @@ map.on('click', 'places', (e) => {
   const template = handlebars.compile(source);
   new mapboxgl.Popup()
     .setLngLat(e.features[0].geometry.coordinates)
-    .setHTML(template(e.features[0].properties))
+    .setHTML(template(e.features[0]))
     .addTo(map);
 });
 
