@@ -80,13 +80,16 @@ $(() => {
     searchBox.prop('disabled', true);
     axios
       .post($(e.target).prop('action'), {
-        term: searchBox.prop('value'),
+        q: searchBox.prop('value'),
       })
       .then((response) => {
         // do things with Response
         window.hfxLights.search.popup(response.data.data.features, searchBox.get(0));
       })
-      // .catch(hfxLights.handleAxiosError)
+      // eslint-disable-next-line
+      .catch((exception) => {
+        searchBox.prop('disabled', false);
+      })
       .then(() => {
         searchBox.prop('disabled', false);
       });

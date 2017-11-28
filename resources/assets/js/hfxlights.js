@@ -42,10 +42,11 @@ window.hfxLights.search = {
     const template = handlebars.compile(source);
     const content = $(template({ searchResults }));
     if (this.resultsElement !== null) {
-      this.resultsElement.replace(content);
-    } else {
-      $(popupReference).parents('#mapHud').append(content);
+      this.resultsElement.replaceWith(content);
       this.resultsElement = content;
+    } else {
+      this.resultsElement = content;
+      $(popupReference).parents('#mapHud').append(this.resultsElement);
     }
   },
 };

@@ -17,7 +17,7 @@ class PlaceSearchController extends Controller
     public function __invoke(Request $request)
     {
         if (request()->ajax()) {
-            return new Places(Place::limit(8)->get());
+            return new Places(Place::where('name', 'like', '%' . $request->input('q') . '%')->get());
         } else {
             return redirect('/');
         }

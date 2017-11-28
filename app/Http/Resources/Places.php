@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Favourite;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class Places extends ResourceCollection
@@ -17,6 +18,11 @@ class Places extends ResourceCollection
         return [
             'type' => 'FeatureCollection',
             'features' => $this->collection->transform(function ($place) {
+                $favourite = Favourite::select('id')
+                    ->where('user_id', auth()->id ?? null)
+                    ->where('favouriteable_id', $place->getKey())
+                    ->where('favouriteable_type', $place->getMorphClass())
+                    ->first();
                 return [
                     'type' => 'Feature',
                     'geometry' => [
@@ -32,6 +38,7 @@ class Places extends ResourceCollection
                         'id' => $place->getKey(),
                         'type' => $place->getMorphClass(),
                         'url' => route('places.show', [$place->getRouteKey()]),
+                        'favourite_id' => $favourite->id ?? null,
                     ],
                 ];
             })->toArray(),

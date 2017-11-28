@@ -14,6 +14,7 @@
             </div>
         </div>
     </div>
-    @include('home._handlebars_templates')
+    @include('home.templates._place_item')
+    @include('home.templates._place_items')
 </div>
 @endsection

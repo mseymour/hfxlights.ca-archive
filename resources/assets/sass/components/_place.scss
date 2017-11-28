@@ -1,0 +1,51 @@
+// <div class="place">
+//     <div class="place__thumb">
+//       (SVG) 27 Chinook Ct
+//     </div>
+//     <div class="place__body">
+//       <div class="place__content">
+//           <h1>27 Chinook Ct</h1>
+//       </div>
+//       <div class="place__controls">
+//         <button class="favourite" data-favourite-id="1" data-favourite-type="App\Place">(fav icon) <span>Favourite</span></button>
+//         <a href="http://localhost:8000/places/1">View Place</a>
+//       </div>
+//     </div>
+//   </div>
+
+.places > ul {
+    list-style: none;
+    padding: 0;
+}
+
+.place {
+    @include make-row();
+
+    &__thumb {
+        @extend .col-auto;
+    }
+
+    &__body {
+        @extend .col;
+    }
+
+    &__content {
+
+    }
+        &__title {
+
+        }
+        &__description {
+
+        }
+
+    &__controls {
+
+    }
+        &__favourite {
+            @extend .btn-sm;
+        }
+        &__show {
+            @extend .btn, .btn-link, .btn-sm;
+        }
+}
