@@ -21,6 +21,7 @@
       </div>
       <div class="place__controls">
         <button class="place__favourite favourite" data-favourite-id="@{{id}}" data-favourite-type="@{{type}}">(fav icon) <span>Favourite</span></button>
+        {{-- <form action="{{ route('favourite', []) }}" --}}
         <a class="place__show" href="@{{url}}">View Place</a>
       </div>
     </div>

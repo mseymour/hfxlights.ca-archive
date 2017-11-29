@@ -1,57 +1,62 @@
 .filter {
-    padding: {
-        left: $spacer;
-        right: $spacer;
-        bottom: $spacer;
-    };
-}
-
-.filter__options {
-    display: flex;
-    flex-direction: row;
-    align-content: stretch;
-    > * + * {
-        margin-left: $spacer;
-    }
+  padding: {
+    left: $spacer;
+    right: $spacer;
+    bottom: $spacer;
+  };
+  display: flex;
+  flex-direction: row;
+  align-content: stretch;
 }
 
 .filter__option {
     flex: 1 0 0;
+    &--geo {
+      order: 0;
+    }
+    &--add {
+      order: 1;
+      margin: 0 $spacer;
+      flex-grow: 0;
+    }
+    &--address {
+      order: 2;
+    }
 }
 
 .filter__button {
-    @extend .btn;
-    @include button-variant($primary, $primary);
+  @extend .btn;
+  @include button-variant($primary, $primary);
 }
 
-.filter__search {
-    user-select: auto;
-    width: 100%;
-    &::before {
-        content: 'aaaaa';
-    }
-    &::placeholder {
-        opacity: 1;
-        color: inherit;
-        font: inherit;
-    }
-    &:not(:placeholder-shown), &:focus {
-        color: $input-color;
-        background-color: $input-bg;
-        background-clip: padding-box;
-        border: $input-btn-border-width solid $input-border-color;
-        @include transition($input-transition);
+.filter__button--search {
+  user-select: auto;
+  width: 100%;
+  &::before {
+    content: 'aaaaa';
+  }
+  &::placeholder {
+    opacity: 1;
+    color: inherit;
+    font: inherit;
+  }
+  &:not(:placeholder-shown), &:focus {
+    color: $input-color;
+    background-color: $input-bg;
+    background-clip: padding-box;
+    border: $input-btn-border-width solid $input-border-color;
+    @include transition($input-transition);
 
-        // Customize the `:focus` state to imitate native WebKit styles.
-        @include form-control-focus();
-    }
+    // Customize the `:focus` state to imitate native WebKit styles.
+    @include form-control-focus();
+  }
 }
 
 .filter__submit {
-    width: 1px;
-    height: 1px;
-    position: absolute;
-    left: 0;
-    opacity: 0;
-    user-select: none;
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  user-select: none;
 }

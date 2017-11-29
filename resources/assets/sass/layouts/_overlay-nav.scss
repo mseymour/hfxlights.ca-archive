@@ -8,7 +8,7 @@
     left: 0;
     right: 0;
 
-    &__home, &__user {
+    &__home, &__user, &__map {
         pointer-events: auto;
     }
 }
@@ -18,10 +18,5 @@
 }
 
 .overlay-nav__user {
-
-}
-
-
-.overlay-map {
 
 }

@@ -26,4 +26,5 @@
         @endguest
         </ul>
     </div>
+    @stack('overlay-nav')
 </nav>
