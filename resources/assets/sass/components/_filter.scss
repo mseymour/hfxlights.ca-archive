@@ -1,9 +1,5 @@
 .filter {
-  padding: {
-    left: $spacer;
-    right: $spacer;
-    bottom: $spacer;
-  };
+  padding: map-get($spacers, 2);
   display: flex;
   flex-direction: row;
   align-content: stretch;
@@ -11,13 +7,20 @@
 
 .filter__option {
     flex: 1 0 0;
+    transition: flex .5s ease-in-out;
     &--geo {
       order: 0;
+      .filter--search & {
+        flex-grow: 0.00001;
+      }
     }
     &--add {
       order: 1;
-      margin: 0 $spacer;
+      margin: 0 map-get($spacers, 2);
       flex-grow: 0;
+      .filter__label {
+        display: none;
+      }
     }
     &--address {
       order: 2;
@@ -27,6 +30,19 @@
 .filter__button {
   @extend .btn;
   @include button-variant($primary, $primary);
+  transition: width .5s ease-in-out;
+  svg {
+    fill: color-yiq($primary);
+  }
+}
+
+.filter__label {
+  transition: width .5s ease-in-out;
+  display: inline-block;
+  overflow-x: hidden;
+  .filter--search & {
+    max-width: 0;
+  }
 }
 
 .filter__button--search {

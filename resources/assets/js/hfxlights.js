@@ -46,7 +46,17 @@ window.hfxLights.search = {
       this.resultsElement = content;
     } else {
       this.resultsElement = content;
+      this.resultsElement.addClass('animated slideInRight');
       $(popupReference).parents('#mapHud').append(this.resultsElement);
     }
+    $('.results__close', this.resultsElement).on('click', () => {
+      this.resultsElement
+        .addClass('animated slideOutLeft')
+        .on('animationend webkitAnimationEnd msAnimationEnd oAnimationEnd', () => {
+          this.resultsElement.remove();
+          this.resultsElement = null;
+        });
+      console.log(this.resultsElement);
+    });
   },
 };

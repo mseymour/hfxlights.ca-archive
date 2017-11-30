@@ -57,7 +57,7 @@ map.on('mouseleave', 'places', () => {
 
 $(() => {
   // eslint-disable-next-line
-  $('.filter__button--geo').on('click', (e) => {
+  $('.filter__option--geo').on('click', (e) => {
     hfxLights.getPreciseLocation()
       .then((position) => {
         map.flyTo({
@@ -72,6 +72,12 @@ $(() => {
       .then(() => {
         console.log('test: getPreciseLocation & map.flyto complete! (Load points, pop-up point list)');
       });
+  });
+
+  $('#mapSearch').on('focus', () => {
+    $('#mapFilter').addClass('filter--search');
+  }).on('blur', () => {
+    $('#mapFilter').removeClass('filter--search');
   });
 
   $('.filter__option--address').on('submit', (e) => {

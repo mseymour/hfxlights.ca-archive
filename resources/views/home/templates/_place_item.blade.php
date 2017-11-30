@@ -13,14 +13,14 @@
         @{{#if title}}
           <h1 class="place__title">@{{title}}</h1>
         @{{else}}
-          <h1 class="place__title"></h1>
+          <h1 class="place__title">&mdash;</h1>
         @{{/if}}
         @{{#if description}}
           <p class="place__description">@{{description}}</p>
         @{{/if}}
       </div>
       <div class="place__controls">
-        <button class="place__favourite favourite" data-favourite-id="@{{id}}" data-favourite-type="@{{type}}">(fav icon) <span>Favourite</span></button>
+        <button class="place__favourite favourite" data-favourite-id="@{{id}}" data-favourite-type="@{{type}}">@svg('openiconic/heart', ['width' => 12, 'height' => 12]) <span>Favourite</span></button>
         {{-- <form action="{{ route('favourite', []) }}" --}}
         <a class="place__show" href="@{{url}}">View Place</a>
       </div>
