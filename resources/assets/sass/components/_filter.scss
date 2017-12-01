@@ -114,6 +114,7 @@
     padding: $input-btn-padding-y-lg $input-btn-padding-x-lg;
     overflow: hidden;
     white-space: nowrap;
+    text-align: center;
   }
   &__input {
     &:active, &:focus, &:not(:empty) {

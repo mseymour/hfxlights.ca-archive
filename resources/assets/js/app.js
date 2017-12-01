@@ -26,7 +26,7 @@ map.on('load', () => {
           visibility: 'visible',
         },
         paint: {
-          'circle-radius': 8,
+          'circle-radius': 10,
           'circle-color': 'rgba(55,148,179,1)',
         },
       });
@@ -37,7 +37,7 @@ map.on('load', () => {
 // When a click event occurs on a feature in the places layer, open a popup at the
 // location of the feature, with description HTML from its properties.
 map.on('click', 'places', (e) => {
-  const source = document.getElementById('placeItem').innerHTML;
+  const source = document.getElementById('placeMarker').innerHTML;
   const template = handlebars.compile(source);
   new mapboxgl.Popup()
     .setLngLat(e.features[0].geometry.coordinates)
