@@ -13,7 +13,7 @@
 
 Route::get('/', 'HomeController');
 
-// Auth::routes();
+Auth::routes();
 
 // Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
 //     Route::get('/', 'ProfileController@edit')->name('edit');
@@ -22,5 +22,11 @@ Route::get('/', 'HomeController');
 // });
 
 Route::resource('places', 'PlaceController')->only(['index', 'create', 'store', 'show']);
-Route::resource('places/{place}/favourite', 'FavouriteController')->only(['store', 'destroy']);
+Route::resource('places/{place}/favourite', 'FavouriteController')->middleware('auth')->only(['store', 'destroy']);
 Route::post('places/search', 'PlaceSearchController')->name('places.search');
+
+Route::middleware('role:admin')->namespace('Backend')->name('backend.')->prefix('dash')->group(function () {
+    Route::get('/', function () {
+        return 'Hi!';
+    });
+});
