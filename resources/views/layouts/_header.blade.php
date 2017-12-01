@@ -1,6 +1,6 @@
 <nav class="overlay-nav">
     <a class="overlay-nav__home" href="{{ url('/') }}"><span>{{ config('app.name', 'HFXLights') }}</span></a>
-    <div class="overlay-nav__user">
+    {{-- <div class="overlay-nav__user">
         <ul class="navbar-nav ml-auto">
         @guest
             <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">@lang('app.navigation.login')</a></li>
@@ -25,6 +25,6 @@
             </li>
         @endguest
         </ul>
-    </div>
+    </div> --}}
     @stack('overlay-nav')
 </nav>

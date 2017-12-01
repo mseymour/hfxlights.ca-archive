@@ -13,13 +13,13 @@
 
 Route::get('/', 'HomeController');
 
-Auth::routes();
+// Auth::routes();
 
-Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
-    Route::get('/', 'ProfileController@edit')->name('edit');
-    Route::patch('/', 'ProfileController@update')->name('update');
-    Route::delete('/', 'ProfileController@delete')->name('delete');
-});
+// Route::middleware('auth')->prefix('profile')->name('profile.')->group(function () {
+//     Route::get('/', 'ProfileController@edit')->name('edit');
+//     Route::patch('/', 'ProfileController@update')->name('update');
+//     Route::delete('/', 'ProfileController@delete')->name('delete');
+// });
 
 Route::resource('places', 'PlaceController')->only(['index', 'create', 'store', 'show']);
 Route::resource('places/{place}/favourite', 'FavouriteController')->only(['store', 'destroy']);
