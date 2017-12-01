@@ -4,7 +4,7 @@ require('./hfxlights');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFya3NleW1vdXIiLCJhIjoiY2phOTB0YndoMDJ5ejMybmNheGJlc294MyJ9.nr0mzYdRzGFNBQUrJLBZMQ';
 
-const map = new mapboxgl.Map({
+hfxLights.map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/streets-v9',
   attributionControl: false,
@@ -12,10 +12,10 @@ const map = new mapboxgl.Map({
   zoom: 13,
 });
 
-map.on('load', () => {
+hfxLights.map.on('load', () => {
   axios.get('/places')
     .then((response) => {
-      map.addSource('places', {
+      hfxLights.map.addSource('places', {
         type: 'geojson',
         data: response.data.data,
       }).addLayer({
@@ -36,43 +36,44 @@ map.on('load', () => {
 
 // When a click event occurs on a feature in the places layer, open a popup at the
 // location of the feature, with description HTML from its properties.
-map.on('click', 'places', (e) => {
+hfxLights.map.on('click', 'places', (e) => {
   const source = document.getElementById('placeMarker').innerHTML;
   const template = handlebars.compile(source);
   new mapboxgl.Popup()
     .setLngLat(e.features[0].geometry.coordinates)
     .setHTML(template(e.features[0]))
-    .addTo(map);
+    .addTo(hfxLights.map);
 });
 
 // Change the cursor to a pointer when the mouse is over the places layer.
-map.on('mouseenter', 'places', () => {
-  map.getCanvas().style.cursor = 'pointer';
+hfxLights.map.on('mouseenter', 'places', () => {
+  hfxLights.map.getCanvas().style.cursor = 'pointer';
 });
 
 // Change it back to a pointer when it leaves.
-map.on('mouseleave', 'places', () => {
-  map.getCanvas().style.cursor = '';
+hfxLights.map.on('mouseleave', 'places', () => {
+  hfxLights.map.getCanvas().style.cursor = '';
 });
 
 $(() => {
-  // eslint-disable-next-line
-  $('.filter__option--geo').on('click', (e) => {
+  $('.filter__option--geo').on('click', () => {
     hfxLights.getPreciseLocation()
       .then((position) => {
-        map.flyTo({
+        hfxLights.map.flyTo({
           center: [
             position.coords.longitude,
             position.coords.latitude,
           ],
         }).then(() => {
-          console.log('test: map.flyto complete!  (Load points, pop-up point list)');
+          console.log('test: hfxLights.map.flyto complete!  (Load points, pop-up point list)');
         });
       })
       .then(() => {
-        console.log('test: getPreciseLocation & map.flyto complete! (Load points, pop-up point list)');
+        console.log('test: getPreciseLocation & hfxLights.map.flyto complete! (Load points, pop-up point list)');
       });
   });
+
+  $('.filter__option--add').on('click', hfxLights.addPlaceMode.toggleEvent);
 
   $('#mapSearch').on('focus', () => {
     $('#mapFilter').addClass('filter--search');
