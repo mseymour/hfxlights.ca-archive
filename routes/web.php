@@ -25,7 +25,7 @@ Route::resource('places', 'PlaceController')->only(['index', 'create', 'store', 
 Route::resource('places/{place}/favourite', 'FavouriteController')->middleware('auth')->only(['store', 'destroy']);
 Route::post('places/search', 'PlaceSearchController')->name('places.search');
 
-Route::middleware('role:admin')->namespace('Backend')->name('backend.')->prefix('dash')->group(function () {
+Route::middleware('role:admin')->namespace('Dashboard')->name('dashboard.')->prefix('dash')->group(function () {
     Route::get('/', function () {
         return 'Hi!';
     });
