@@ -1,16 +1,16 @@
 .favourite {
-    @extend .btn, .btn-sm;
-    @include button-variant(theme-color(light), theme-color(light));
+  @extend .btn, .btn-sm;
+  @include button-variant(theme-color(light), theme-color(light));
+  color: color('red');
+  fill: color('red');
+  @include hover {
     color: color('red');
     fill: color('red');
-    @include hover {
-        color: color('red');
-        fill: color('red');
-    }
-    &:not([disabled]):not(.disabled):active,
-    &:not([disabled]):not(.disabled).active,
-    .show > &.dropdown-toggle {
-      color: color('red');
-      fill: color('red');
+  }
+  &:not([disabled]):not(.disabled):active,
+  &:not([disabled]):not(.disabled).active,
+  .show > &.dropdown-toggle {
+    color: color('red');
+    fill: color('red');
   }
 }
