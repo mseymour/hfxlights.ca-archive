@@ -19,6 +19,7 @@ class CreateTaggablesTable extends Migration
             $table->timestamps();
 
             $table->primary(['tag_id', 'taggable_id', 'taggable_type']);
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
         });
     }
 
