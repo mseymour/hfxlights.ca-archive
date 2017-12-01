@@ -28,9 +28,40 @@
 }
 
 .filter__button {
-  @extend .btn;
+  display: inline-block;
+  font-weight: $btn-font-weight;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: $input-btn-border-width solid transparent;
+  @include button-size($input-btn-padding-y-lg, $input-btn-padding-x-lg, $font-size-lg, $input-btn-line-height-lg, $btn-border-radius-lg);
   @include button-variant($primary, $primary);
-  transition: width .5s ease-in-out;
+  @include transition($btn-transition);
+
+  // Share hover and focus styles
+  @include hover-focus {
+    text-decoration: none;
+  }
+  &:focus,
+  &.focus {
+    outline: 0;
+    box-shadow: $input-btn-focus-box-shadow;
+  }
+
+  // Disabled comes first so active can properly restyle
+  &.disabled,
+  &:disabled {
+    opacity: .65;
+    @include box-shadow(none);
+  }
+
+  &:not([disabled]):not(.disabled):active,
+  &:not([disabled]):not(.disabled).active {
+    background-image: none;
+    @include box-shadow($input-btn-focus-box-shadow, $btn-active-box-shadow);
+  }
+
   svg {
     fill: color-yiq($primary);
   }
@@ -48,15 +79,12 @@
 .filter__button--search {
   user-select: auto;
   width: 100%;
-  &::before {
-    content: 'aaaaa';
-  }
   &::placeholder {
     opacity: 1;
     color: inherit;
     font: inherit;
   }
-  &:not(:placeholder-shown), &:focus {
+  &:active, &:focus, &:not(:empty) {
     color: $input-color;
     background-color: $input-bg;
     background-clip: padding-box;
@@ -65,6 +93,34 @@
 
     // Customize the `:focus` state to imitate native WebKit styles.
     @include form-control-focus();
+  }
+}
+
+.search {
+  width: 100%;
+  display: block;
+  position: relative;
+  &__label {
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    color: color-yiq($primary);
+    fill: color-yiq($primary);
+    font-size: $font-size-lg;
+    line-height: $input-btn-line-height-lg;
+    padding: $input-btn-padding-y-lg $input-btn-padding-x-lg;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  &__input {
+    &:active, &:focus, &:not(:empty) {
+      + .search__label {
+        display: none;
+      }
+    }
   }
 }
 
