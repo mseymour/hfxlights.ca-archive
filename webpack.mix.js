@@ -1,5 +1,5 @@
-let mix = require('laravel-mix');
-let webpack = require('webpack');
+const mix = require('laravel-mix');
+const webpack = require('webpack');
 
 /*
  |--------------------------------------------------------------------------
@@ -13,27 +13,27 @@ let webpack = require('webpack');
  */
 
 mix.webpackConfig({
-    module: {
-      rules: [{
-        test: /\.js$/,
-        exclude: /node_modules/,
-        enforce: 'pre',
-        loader: 'eslint-loader',
-      }, ],
-    },
-    plugins: [
-      new webpack.ProvidePlugin({
-        Popper: ['popper.js', 'default'],
-      }),
-    ],
-  }).autoload({
-    'mapbox-gl': ['mapboxgl'],
-    'handlebars/dist/handlebars.min': ['handlebars'],
-    lodash: ['_'],
-    axios: ['axios', 'window.axios'],
-    'jquery/dist/jquery.slim': ['$', 'jQuery', 'window.jQuery'],
-    'popper.js/dist/umd/popper': ['Popper']
-  })
+  module: {
+    rules: [{
+      test: /\.js$/,
+      exclude: /node_modules/,
+      enforce: 'pre',
+      loader: 'eslint-loader',
+    }],
+  },
+  plugins: [
+    new webpack.ProvidePlugin({
+      Popper: ['popper.js', 'default'],
+    }),
+  ],
+}).autoload({
+  'mapbox-gl': ['mapboxgl'],
+  'handlebars/dist/handlebars.min': ['handlebars'],
+  lodash: ['_'],
+  axios: ['axios', 'window.axios'],
+  'jquery/dist/jquery.slim': ['$', 'jQuery', 'window.jQuery'],
+  'popper.js/dist/umd/popper': ['Popper'],
+})
   .js('resources/assets/js/app.js', 'public/js')
   .sass('resources/assets/sass/app.scss', 'public/css')
   .copyDirectory('resources/assets/images', 'public/images')
