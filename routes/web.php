@@ -21,7 +21,7 @@ Auth::routes();
 //     Route::delete('/', 'ProfileController@delete')->name('delete');
 // });
 
-Route::resource('places', 'PlaceController')->only(['index', 'create', 'store', 'show']);
+Route::resource('places', 'PlaceController')->except('destroy');
 Route::resource('places/{place}/favourite', 'FavouriteController')->middleware('auth')->only(['store', 'destroy']);
 Route::post('places/search', 'PlaceSearchController')->name('places.search');
 

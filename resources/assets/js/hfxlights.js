@@ -1,179 +1,100 @@
-/* eslint-disable no-console */
+const hfxLights = {};
 
-window.hfxLights = {
+hfxLights.map = {
   map: null,
-  getPreciseLocation() {
-    return new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition((position) => {
-        resolve([position.coords.latitude, position.coords.longitude]);
+  init() {
+    this.map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v9',
+      attributionControl: false,
+      center: [-63.571389, 44.647778],
+      zoom: 13,
+    })
+      .on('load', this.populateMap)
+      // When a click event occurs on a feature in the places layer, open a popup at the
+      // location of the feature, with description HTML from its properties.
+      .on('click', 'places', this.createPlacePopup)
+      .on('mouseenter', 'places', () => {
+        hfxLights.map.map.getCanvas().style.cursor = 'pointer';
+      })
+      .on('mouseleave', 'places', () => {
+        hfxLights.map.map.getCanvas().style.cursor = '';
       });
-    });
   },
-  handleAxiosError(error) {
-    if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      console.log(error.response.headers);
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log('Error', error.message);
-    }
-    console.log(error.config);
-  },
-  // geocodeAddress(address) {
-  //   // stub
-  // },
-  // retrievePointsByBoundingBox(boundingBox) {
-  //   // stub
-  // },
-};
-
-window.hfxLights.addPlaceMode = {
-  enabled: false,
-  isCursorOverPoint: false,
-  isDragging: false,
-  canvas: null,
-  geojson: null,
-  toggleEvent(e) {
-    console.log('toggleEvent');
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (this.enabled) {
-      console.log('addPlaceMode enabled, tearing down...');
-      // Tear down Add Place Mode
-      hfxLights.map.setLayoutProperty('places', 'visibility', 'visible');
-      hfxLights.map.removeLayer('newMarker');
-      this.enabled = false;
-      this.isCursorOverPoint = false;
-      this.isDragging = false;
-      this.canvas = null;
-      this.geojson = null;
-    } else {
-      console.log('addPlaceMode disabled, booting...');
-      // Setup Add Place Mode
-      this.geojson = {
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [0, 0],
-          },
-        }],
-      };
-      hfxLights.map.setLayoutProperty('places', 'visibility', 'none');
-      this.enabled = true;
-      this.canvas = hfxLights.map.getCanvasContainer();
-
-      hfxLights.map.addSource('newMarkerPoint', {
+  populateMap() {
+    hfxLights.map.map
+      .addSource('places', {
         type: 'geojson',
-        data: this.geojson,
-      });
-
-      hfxLights.map.addLayer({
-        id: 'newMarkerPoint',
+        data: {
+          type: 'FeatureCollection',
+          features: [],
+        },
+      })
+      .addLayer({
+        id: 'places',
         type: 'circle',
-        source: 'newMarkerPoint',
+        source: 'places',
+        layout: {
+          visibility: 'visible',
+        },
         paint: {
           'circle-radius': 10,
-          'circle-color': '#3887be',
+          'circle-color': 'rgba(55,148,179,1)',
         },
       });
 
-      // When the cursor enters a feature in the point layer, prepare for dragging.
-      hfxLights.map.on('mouseenter', 'newMarkerPoint', () => {
-        console.log('mouseenter newMarkerPoint', this);
-        hfxLights.map.setPaintProperty('newMarkerPoint', 'circle-color', '#3bb2d0');
-        this.canvas.style.cursor = 'move';
-        this.isCursorOverPoint = true;
-        hfxLights.map.dragPan.disable();
+    hfxLights.map.refreshPlaces();
+  },
+  refreshPlaces() {
+    axios.get('/places')
+      .then((response) => {
+        hfxLights.map.map.getSource('places').setData(response.data.data);
       });
-
-      hfxLights.map.on('mouseleave', 'newMarkerPoint', () => {
-        console.log('mouseleave newMarkerPoint', this);
-        hfxLights.map.setPaintProperty('newMarkerPoint', 'circle-color', '#3887be');
-        this.canvas.style.cursor = '';
-        this.isCursorOverPoint = false;
-        hfxLights.map.dragPan.enable();
-      });
-
-      hfxLights.map.on('mousedown', this.mouseDownEvent);
-    }
   },
-  mouseDownEvent() {
-    console.log('mouseDownEvent', this);
-    if (!this.isCursorOverPoint) return;
-
-    this.isDragging = true;
-
-    // Set a cursor indicator
-    this.canvas.style.cursor = 'grab';
-
-    // Mouse events
-    hfxLights.map.on('mousemove', this.onMove);
-    hfxLights.map.once('mouseup', this.onUp);
-  },
-  onMove(e) {
-    console.log('onMove', this);
-    if (!this.isDragging) return;
-    const coords = e.lngLat;
-
-    // Set a UI indicator for dragging.
-    this.canvas.style.cursor = 'grabbing';
-
-    // Update the Point feature in `geojson` coordinates
-    // and call setData to the source layer `point` on it.
-    this.geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
-    hfxLights.map.getSource('newMarkerPoint').setData(this.geojson);
-  },
-  onUp(e) {
-    console.log('onUp', this);
-    if (!this.isDragging) return;
-    console.log(e.lngLat);
-
-    // Print the coordinates of where the point had
-    // finished being dragged to on the map.
-    // coordinates.style.display = 'block';
-    // coordinates.innerHTML = 'Longitude: ' + coords.lng + '<br />Latitude: ' + coords.lat;
-    this.canvas.style.cursor = '';
-    this.isDragging = false;
-
-    // Unbind mouse events
-    hfxLights.map.off('mousemove', this.onMove);
+  createPlacePopup(e) {
+    const source = document.getElementById('placeMarker').innerHTML;
+    const template = handlebars.compile(source);
+    new mapboxgl.Popup()
+      .setLngLat(e.features[0].geometry.coordinates)
+      .setHTML(template(e.features[0]))
+      .addTo(hfxLights.map.map);
   },
 };
 
-window.hfxLights.search = {
-  resultsElement: null,
-  popup(searchResults, popupReference) {
+hfxLights.map.search = {
+  popper: null,
+  init() {
+    $('.filter__option--address').on('submit', this.popupContent);
+  },
+
+  searchSubmitEvent(e) {
+    const searchBox = $('.filter__search', e.target);
+    e.preventDefault();
+    searchBox.prop('disabled', true);
+    axios
+      .post($(e.target).prop('action'), {
+        q: searchBox.prop('value'),
+      })
+      .then(this.popupContent.bind(this, searchBox));
+  },
+  popupContent(searchBox, response) {
     handlebars.registerPartial('placeItem', document.getElementById('placeItem').innerHTML);
+    const searchResults = response.data.data;
     const source = document.getElementById('placeItems').innerHTML;
     const template = handlebars.compile(source);
     const content = $(template({ searchResults }));
-    if (this.resultsElement !== null) {
-      this.resultsElement.replaceWith(content);
-      this.resultsElement = content;
+    if (this.popper) {
+      // update popper content
     } else {
-      this.resultsElement = content;
-      this.resultsElement.addClass('animated slideInRight');
-      $(popupReference).parents('#mapHud').append(this.resultsElement);
+      this.popper = new Popper(searchBox, content);
     }
-    $('.results__close', this.resultsElement).on('click', () => {
-      this.resultsElement
-        .addClass('animated slideOutLeft')
-        .on('animationend webkitAnimationEnd msAnimationEnd oAnimationEnd', () => {
-          this.resultsElement.remove();
-          this.resultsElement = null;
-        });
-      console.log(this.resultsElement);
-    });
   },
 };
+
+hfxLights.map.add = {
+  init() {
+    //
+  },
+};
+
+export default hfxLights;

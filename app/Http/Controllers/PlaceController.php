@@ -29,7 +29,7 @@ class PlaceController extends Controller
      */
     public function create()
     {
-        //
+        return view('places.create');
     }
 
     /**
@@ -50,6 +50,29 @@ class PlaceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Place $place)
+    {
+        return view('places.show')->withPlace($place);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Place  $place
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Place $place)
+    {
+        return view('places.edit')->withPlace($place);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Place  $place
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Place $place)
     {
         //
     }
