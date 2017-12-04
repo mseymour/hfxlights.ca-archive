@@ -28,7 +28,7 @@ mix.webpackConfig({
   ],
 }).autoload({
   'mapbox-gl': ['mapboxgl'],
-  'handlebars/dist/handlebars.min': ['handlebars'],
+  'handlebars/dist/handlebars': ['handlebars'],
   lodash: ['_'],
   axios: ['axios', 'window.axios'],
   'jquery/dist/jquery.slim': ['$', 'jQuery', 'window.jQuery'],

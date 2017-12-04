@@ -7,7 +7,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFya3NleW1vdXIiLCJhIjoiY2phOTB0YndoMDJ5ejMyb
 
 hfxLights.map.init();
 
-
 $(() => {
   $('#mapFilter, #mapAddMarker')
     .on('hfxLights:toggleAddMarker', (e) => {

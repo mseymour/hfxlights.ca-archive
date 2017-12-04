@@ -1,4 +1,12 @@
-const hfxLights = {};
+const hfxLights = {
+  getPreciseLocation() {
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        resolve([position.coords.latitude, position.coords.longitude]);
+      });
+    });
+  },
+};
 
 hfxLights.map = {
   map: null,
@@ -64,7 +72,7 @@ hfxLights.map = {
 hfxLights.map.search = {
   popper: null,
   init() {
-    $('.filter__option--address').on('submit', this.popupContent);
+    $('.filter__option--address').on('submit', this.searchSubmitEvent);
   },
 
   searchSubmitEvent(e) {
@@ -75,18 +83,23 @@ hfxLights.map.search = {
       .post($(e.target).prop('action'), {
         q: searchBox.prop('value'),
       })
-      .then(this.popupContent.bind(this, searchBox));
+      .then(hfxLights.map.search.popupContent.bind(this, searchBox))
+      .then(() => {
+        searchBox.prop('disabled', false);
+      });
   },
   popupContent(searchBox, response) {
+    // eslint-disable-next-line
+    console.log(response);
     handlebars.registerPartial('placeItem', document.getElementById('placeItem').innerHTML);
-    const searchResults = response.data.data;
+    const searchResults = response.data.data.data;
     const source = document.getElementById('placeItems').innerHTML;
     const template = handlebars.compile(source);
-    const content = $(template({ searchResults }));
-    if (this.popper) {
-      // update popper content
+    const content = $(template({ searchResults })).insertAfter(searchBox);
+    if (hfxLights.map.search.popper) {
+      //
     } else {
-      this.popper = new Popper(searchBox, content);
+      hfxLights.map.search.popper = new Popper(searchBox, content);
     }
   },
 };
