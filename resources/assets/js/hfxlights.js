@@ -106,7 +106,19 @@ hfxLights.map.search = {
 
 hfxLights.map.add = {
   init() {
-    //
+    $('#mapFilter, #mapAddMarker')
+      .on('hfxLights:toggleAddMarker', (e) => {
+        if ($(e.target).is(':visible')) {
+          $(e.target).hide().prop('aria-hidden', true);
+        } else {
+          $(e.target).show().prop('aria-hidden', false);
+        }
+      });
+
+    $('.filter__option--add, .filter__option--cancel').on('click', () => {
+      $('#mapFilter, #mapAddMarker').trigger('hfxLights:toggleAddMarker');
+    });
+    // TODO: better mode toggling
   },
 };
 

@@ -8,15 +8,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWFya3NleW1vdXIiLCJhIjoiY2phOTB0YndoMDJ5ejMyb
 hfxLights.map.init();
 
 $(() => {
-  $('#mapFilter, #mapAddMarker')
-    .on('hfxLights:toggleAddMarker', (e) => {
-      if ($(e.target).is(':visible')) {
-        $(e.target).hide().prop('aria-hidden', true);
-      } else {
-        $(e.target).show().prop('aria-hidden', false);
-      }
-    });
-
   $('.filter__option--geo').on('click', () => {
     hfxLights.getPreciseLocation()
       .then((position) => {
@@ -34,10 +25,6 @@ $(() => {
       });
   });
 
-  $('.filter__option--add').on('click', () => {
-    $(window).trigger('hfxLights:toggleAddMarker');
-  });
-
   $('#mapSearch').on('focus', () => {
     $('#mapFilter').addClass('filter--search');
   }).on('blur', () => {
@@ -45,4 +32,5 @@ $(() => {
   });
 
   hfxLights.map.search.init();
+  hfxLights.map.add.init();
 });
