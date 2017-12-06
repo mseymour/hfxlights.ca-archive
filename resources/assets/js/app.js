@@ -32,5 +32,5 @@ $(() => {
   });
 
   hfxLights.map.search.init();
-  hfxLights.map.add.init();
+  hfxLights.map.controls.init('#controls');
 });

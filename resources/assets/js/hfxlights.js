@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const hfxLights = {
   getPreciseLocation() {
     return new Promise((resolve) => {
@@ -74,7 +75,6 @@ hfxLights.map.search = {
   init() {
     $('.filter__option--address').on('submit', this.searchSubmitEvent);
   },
-
   searchSubmitEvent(e) {
     const searchBox = $('.filter__search', e.target);
     e.preventDefault();
@@ -89,36 +89,50 @@ hfxLights.map.search = {
       });
   },
   popupContent(searchBox, response) {
-    // eslint-disable-next-line
-    console.log(response);
     handlebars.registerPartial('placeItem', document.getElementById('placeItem').innerHTML);
     const searchResults = response.data.data.data;
     const source = document.getElementById('placeItems').innerHTML;
     const template = handlebars.compile(source);
     const content = $(template({ searchResults })).insertAfter(searchBox);
+    // Make dynamic?
     if (hfxLights.map.search.popper) {
-      //
-    } else {
-      hfxLights.map.search.popper = new Popper(searchBox, content);
+      hfxLights.map.search.popper.destroy();
     }
+    hfxLights.map.search.popper = new Popper(searchBox, content);
   },
 };
 
-hfxLights.map.add = {
-  init() {
-    $('#mapFilter, #mapAddMarker')
-      .on('hfxLights:toggleAddMarker', (e) => {
-        if ($(e.target).is(':visible')) {
-          $(e.target).hide().prop('aria-hidden', true);
+hfxLights.map.controls = {
+  container: null,
+  init(element) {
+    if (typeof element === 'undefined') throw new Error('Argument is required');
+    this.container = $(element);
+    console.log('controls init', hfxLights.map.controls.container);
+
+    // Trigger general mode change
+    this.container.on('hfxlights:controlchange', (e, controlName) => {
+      console.log('hfxlights:controlchange to ', controlName);
+      $('[data-control]', e.currentTarget).each((index, control) => {
+        const controlElement = $(control);
+        if (controlElement.data('control') === controlName) {
+          console.log('enabling control', controlElement.data('control'));
+          controlElement.show().prop('aria-hidden', false);
         } else {
-          $(e.target).show().prop('aria-hidden', false);
+          console.log('disabling control', controlElement.data('control'));
+          controlElement.hide().prop('aria-hidden', true);
         }
       });
-
-    $('.filter__option--add, .filter__option--cancel').on('click', () => {
-      $('#mapFilter, #mapAddMarker').trigger('hfxLights:toggleAddMarker');
     });
-    // TODO: better mode toggling
+
+    // Toggle controls
+    $('[data-toggle-control]', this.container).on('click', (e) => {
+      console.log('Toggling control', e, $(e.currentTarget).data('toggle-control'));
+      hfxLights.map.controls.changeControls($(e.currentTarget).data('toggle-control'));
+    });
+  },
+  changeControls(controlName) {
+    console.log('chaneControls', controlName);
+    hfxLights.map.controls.container.trigger('hfxlights:controlchange', controlName);
   },
 };
 
