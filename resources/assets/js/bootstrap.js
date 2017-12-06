@@ -6,7 +6,7 @@
 
 /* eslint-disable */
 try {
-  require('./debounce');
+  require('inobounce');
   require('bootstrap');
 } catch (e) {}
 /* eslint-enable */
