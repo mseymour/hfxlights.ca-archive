@@ -107,18 +107,14 @@ hfxLights.map.controls = {
   init(element) {
     if (typeof element === 'undefined') throw new Error('Argument is required');
     this.container = $(element);
-    console.log('controls init', hfxLights.map.controls.container);
 
     // Trigger general mode change
     this.container.on('hfxlights:controlchange', (e, controlName) => {
-      console.log('hfxlights:controlchange to ', controlName);
       $('[data-control]', e.currentTarget).each((index, control) => {
         const controlElement = $(control);
         if (controlElement.data('control') === controlName) {
-          console.log('enabling control', controlElement.data('control'));
           controlElement.show().prop('aria-hidden', false);
         } else {
-          console.log('disabling control', controlElement.data('control'));
           controlElement.hide().prop('aria-hidden', true);
         }
       });
@@ -126,12 +122,10 @@ hfxLights.map.controls = {
 
     // Toggle controls
     $('[data-toggle-control]', this.container).on('click', (e) => {
-      console.log('Toggling control', e, $(e.currentTarget).data('toggle-control'));
       hfxLights.map.controls.changeControls($(e.currentTarget).data('toggle-control'));
     });
   },
   changeControls(controlName) {
-    console.log('chaneControls', controlName);
     hfxLights.map.controls.container.trigger('hfxlights:controlchange', controlName);
   },
 };
