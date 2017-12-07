@@ -1,4 +1,4 @@
-<div id="controls">
+<div id="controls" data-active-control="filter">
     <div class="map__filter filter" data-control="filter">
         <button class="filter__option filter__option--add filter__button" data-toggle-control="add" type="button">@svg('openiconic/plus', ['width' => 12, 'height' => 12]) <span class="filter__label">Add Place</span></button>
         <button class="filter__option filter__option--geo filter__button" type="button">@svg('openiconic/location', ['width' => 12, 'height' => 12]) <span class="filter__label"><span class="sr-only">Search for Places</span> Near Me</span></button>

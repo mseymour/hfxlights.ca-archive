@@ -110,10 +110,18 @@ hfxLights.map.controls = {
 
     // Trigger general mode change
     this.container.on('hfxlights:controlchange', (e, controlName) => {
+      // Save current active control name for teardown
+      const previousControlName = $(e.currentTarget).data('active-control');
+      // Destroy control
+      hfxLights.map.controls.methods[previousControlName].destroy();
       $('[data-control]', e.currentTarget).each((index, control) => {
         const controlElement = $(control);
         if (controlElement.data('control') === controlName) {
+          // Store current active control for later
+          $(e.currentTarget).data('active-control', controlName);
           controlElement.show().prop('aria-hidden', false);
+          // Initialize new control
+          hfxLights.map.controls.methods[controlName].init();
         } else {
           controlElement.hide().prop('aria-hidden', true);
         }
@@ -127,6 +135,22 @@ hfxLights.map.controls = {
   },
   changeControls(controlName) {
     hfxLights.map.controls.container.trigger('hfxlights:controlchange', controlName);
+  },
+  methods: {
+    filter: {
+      init() {},
+      destroy() {},
+    },
+    add: {
+      init() {
+        const { map } = hfxLights.map;
+        map.setLayoutProperty('places', 'visibility', 'none');
+      },
+      destroy() {
+        const { map } = hfxLights.map;
+        map.setLayoutProperty('places', 'visibility', 'visible');
+      },
+    },
   },
 };
 
