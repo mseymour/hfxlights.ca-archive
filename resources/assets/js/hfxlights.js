@@ -142,13 +142,107 @@ hfxLights.map.controls = {
       destroy() {},
     },
     add: {
+      isDragging: false,
+      isCursorOverPoint: false,
+      geojson: {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [0, 0],
+          },
+        }],
+      },
       init() {
         const { map } = hfxLights.map;
+        const canvas = map.getCanvasContainer();
         map.setLayoutProperty('places', 'visibility', 'none');
+
+        this.geojson.features[0].geometry.coordinates = map.getCenter();
+
+        map.addSource('point', {
+          type: 'geojson',
+          data: this.geojson,
+        });
+
+        map.addLayer({
+          id: 'point',
+          type: 'circle',
+          source: 'point',
+          paint: {
+            'circle-radius': 10,
+            'circle-color': '#3887be',
+          },
+        });
+
+        // When the cursor enters a feature in the point layer, prepare for dragging.
+        map.on('mouseenter', 'point', () => {
+          map.setPaintProperty('point', 'circle-color', '#3bb2d0');
+          canvas.style.cursor = 'move';
+          this.isCursorOverPoint = true;
+          map.dragPan.disable();
+        });
+
+        map.on('mouseleave', 'point', () => {
+          map.setPaintProperty('point', 'circle-color', '#3887be');
+          canvas.style.cursor = '';
+          this.isCursorOverPoint = false;
+          map.dragPan.enable();
+        });
+
+        map.on('mousedown', this.mouseDown);
       },
+
+      mouseDown() {
+        if (!this.isCursorOverPoint) return;
+        this.isDragging = true;
+
+        const { map } = hfxLights.map;
+        const canvas = map.getCanvasContainer();
+
+        // Set a cursor indicator
+        canvas.style.cursor = 'grab';
+
+        // Mouse events
+        map.on('mousemove', this.onMove);
+        map.once('mouseup', this.onUp);
+      },
+
+      onMove(e) {
+        if (!this.isDragging) return;
+        const { map } = hfxLights.map;
+        const canvas = map.getCanvasContainer();
+        const coords = e.lngLat;
+
+        // Set a UI indicator for dragging.
+        canvas.style.cursor = 'grabbing';
+
+        // Update the Point feature in `geojson` coordinates
+        // and call setData to the source layer `point` on it.
+        this.geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
+        map.getSource('point').setData(this.geojson);
+      },
+
+      onUp(e) {
+        if (!this.isDragging) return;
+        const { map } = hfxLights.map;
+        const coords = e.lngLat;
+
+        console.log(coords);
+
+        this.isDragging = false;
+
+        // Unbind mouse events
+        map.off('mousemove', this.onMove);
+      },
+
       destroy() {
+        this.isDragging = false;
+        this.isCursorOverPoint = false;
         const { map } = hfxLights.map;
         map.setLayoutProperty('places', 'visibility', 'visible');
+        map.removeLayer('point');
       },
     },
   },
