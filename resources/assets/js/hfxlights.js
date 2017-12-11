@@ -194,10 +194,10 @@ hfxLights.map = {
   },
   createNewPlaceMarker(coords) {
     const { map } = hfxLights;
-
+    // Sometimes performingLongPress is set to false, return if needed
+    if (map.map.isMoving() || !map.performingLongPress) return;
 
     map.performingLongPress = false;
-    if (map.map.isMoving()) return;
     // empty Features array
     map.newPlaceGeoJson.features.length = 0;
     // push new marker onto array
