@@ -25,6 +25,9 @@
     &--address {
       order: 2;
     }
+    &--continue {
+      margin-left: map-get($spacers, 2);
+    }
 }
 
 .filter__button {

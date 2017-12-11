@@ -37,7 +37,7 @@ mix
     'jquery/dist/jquery.slim': ['$', 'jQuery', 'window.jQuery'],
     'popper.js/dist/umd/popper': ['Popper'],
   })
-  .js('resources/assets/js/app.js', 'public/js')
+  .js('resources/assets/js/app.js', 'public/js/app.js')
   .extract([
     'mapbox-gl',
     'handlebars/dist/handlebars',

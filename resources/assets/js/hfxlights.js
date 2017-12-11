@@ -11,7 +11,22 @@ const hfxLights = {
 
 hfxLights.map = {
   map: null,
+  placesGeoJson: {},
+  newPlaceGeoJson: {},
+  isDragging: false,
+  isCursorOverPoint: false,
+  longPressTimeout: null,
+  longPressInterval: 2000,
+  performingLongPress: false,
+
   init() {
+    const emptyGeoJson = {
+      type: 'FeatureCollection',
+      features: [],
+    };
+    this.placesGeoJson = emptyGeoJson;
+    this.newPlaceGeoJson = emptyGeoJson;
+
     this.map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/streets-v9',
@@ -29,30 +44,139 @@ hfxLights.map = {
       .on('mouseleave', 'places', () => {
         hfxLights.map.map.getCanvas().style.cursor = '';
       });
+
+    const cancelLongPress = () => {
+      // Cancel long press timeouts while moving
+      const { map } = hfxLights;
+      if (map.performingLongPress) {
+        map.performingLongPress = false;
+        window.clearTimeout(map.longPressTimeout);
+        map.longPressTimeout = null;
+      }
+    };
+
+    this.map
+      .on('move', cancelLongPress)
+      .on('zoom', cancelLongPress)
+      .on('rotate', cancelLongPress)
+      .on('pinch', cancelLongPress);
+
+    this.map.on('mouseenter', 'newPlace', () => {
+      const { map } = hfxLights;
+      map.map.setPaintProperty('newPlace', 'circle-color', '#FF0000');
+      map.map.getCanvas().style.cursor = 'move';
+      map.isCursorOverPoint = true;
+      map.map.dragPan.disable();
+      // TODO: fix on touch devices:
+      // point gets selected and can be freely draged around map,
+      // tap on map outside and point becomes deselected
+    });
+
+    this.map.on('mouseleave', 'newPlace', (e) => {
+      console.log(`mouseleave ${e.type}`);
+      const { map } = hfxLights;
+      map.map.setPaintProperty('newPlace', 'circle-color', '#0000FF');
+      map.map.getCanvas().style.cursor = '';
+      map.isCursorOverPoint = false;
+      map.map.dragPan.enable();
+    });
+
+    this.map.on('touchstart', this.eventMouseDown);
+    this.map.on('mousedown', this.eventMouseDown);
+  },
+  eventMouseDown(e) {
+    const { map } = hfxLights;
+
+    if (!map.isCursorOverPoint) {
+      map.performingLongPress = true;
+
+      map.longPressTimeout =
+        window.setTimeout(map.createNewPlaceMarker, map.longPressInterval, e.lngLat);
+    } else {
+      map.isDragging = true;
+
+      // Set a cursor indicator
+      map.map.getCanvas().style.cursor = 'grab';
+      // Mouse events
+      map.map.on('touchmove', map.eventMouseMove);
+      map.map.on('mousemove', map.eventMouseMove);
+    }
+    map.map.once('touchcancel', map.eventMouseUp);
+    map.map.once('touchend', map.eventMouseUp);
+    map.map.once('mouseup', map.eventMouseUp);
+  },
+  eventMouseMove(e) {
+    const { map } = hfxLights;
+    map.performingLongPress = false;
+    window.clearTimeout(map.longPressTimeout);
+    map.longPressTimeout = null;
+    if (!map.isDragging) return;
+    const coords = e.lngLat;
+
+    // Set a UI indicator for dragging.
+    map.map.getCanvas().style.cursor = 'grabbing';
+
+    // Update the newPlace feature in `geojson` coordinates
+    // and call setData to the source layer `point` on it.
+    map.newPlaceGeoJson.features[0].geometry.coordinates = [coords.lng, coords.lat];
+    map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
+  },
+  eventMouseUp(e) {
+    const { map } = hfxLights;
+    window.clearTimeout(map.longPressTimeout);
+    map.longPressTimeout = null;
+    if (!map.isDragging) return;
+
+    const coords = e.lngLat;
+
+    // do a thing with coords
+    console.log(coords);
+
+    map.map.getCanvas().style.cursor = '';
+    map.isDragging = false;
+
+    // Unbind mouse events
+    map.map.off('touchmove', map.eventMouseMove);
+    map.map.off('mousemove', map.eventMouseMove);
   },
   populateMap() {
-    hfxLights.map.map
+    const { map } = hfxLights;
+    const layerPaintOptions = {
+      paint: {
+        'circle-radius': 12,
+        'circle-color': '#00FF00',
+      },
+    };
+
+    map.map
       .addSource('places', {
         type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: [],
-        },
+        data: map.placesGeoJson,
       })
-      .addLayer({
+      .addLayer(Object.assign({
         id: 'places',
         type: 'circle',
         source: 'places',
         layout: {
           visibility: 'visible',
         },
-        paint: {
-          'circle-radius': 10,
-          'circle-color': 'rgba(55,148,179,1)',
-        },
-      });
+      }, layerPaintOptions));
 
-    hfxLights.map.refreshPlaces();
+    map.map
+      .addSource('newPlace', {
+        type: 'geojson',
+        data: map.newPlaceGeoJson,
+      })
+      .addLayer(Object.assign({
+        id: 'newPlace',
+        type: 'circle',
+        source: 'newPlace',
+        layout: {
+          visibility: 'visible',
+        },
+      }, layerPaintOptions));
+
+    map.refreshPlaces();
   },
   refreshPlaces() {
     axios.get('/places')
@@ -67,6 +191,28 @@ hfxLights.map = {
       .setLngLat(e.features[0].geometry.coordinates)
       .setHTML(template(e.features[0]))
       .addTo(hfxLights.map.map);
+  },
+  createNewPlaceMarker(coords) {
+    const { map } = hfxLights;
+
+
+    map.performingLongPress = false;
+    if (map.map.isMoving()) return;
+    // empty Features array
+    map.newPlaceGeoJson.features.length = 0;
+    // push new marker onto array
+    map.newPlaceGeoJson.features.push({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [
+          coords.lng,
+          coords.lat,
+        ],
+      },
+    });
+    map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
+    map.controls.changeControls('add');
   },
 };
 
@@ -110,10 +256,19 @@ hfxLights.map.controls = {
 
     // Trigger general mode change
     this.container.on('hfxlights:controlchange', (e, controlName) => {
+      const { map } = hfxLights;
       // Save current active control name for teardown
       const previousControlName = $(e.currentTarget).data('active-control');
+      // Do not destroy and init controls if both are the same
+      if (previousControlName === controlName) return;
+
       // Destroy control
-      hfxLights.map.controls.methods[previousControlName].destroy();
+      if (Object.prototype.hasOwnProperty.call(map.controls.methods, previousControlName)) {
+        if (Object.prototype.hasOwnProperty.call(map.controls.methods[previousControlName], 'destroy')) {
+          map.controls.methods[previousControlName].destroy();
+        }
+      }
+
       $('[data-control]', e.currentTarget).each((index, control) => {
         const controlElement = $(control);
         if (controlElement.data('control') === controlName) {
@@ -121,7 +276,11 @@ hfxLights.map.controls = {
           $(e.currentTarget).data('active-control', controlName);
           controlElement.show().prop('aria-hidden', false);
           // Initialize new control
-          hfxLights.map.controls.methods[controlName].init();
+          if (Object.prototype.hasOwnProperty.call(map.controls.methods, controlName)) {
+            if (Object.prototype.hasOwnProperty.call(map.controls.methods[controlName], 'init')) {
+              map.controls.methods[controlName].init();
+            }
+          }
         } else {
           controlElement.hide().prop('aria-hidden', true);
         }
@@ -136,113 +295,34 @@ hfxLights.map.controls = {
   changeControls(controlName) {
     hfxLights.map.controls.container.trigger('hfxlights:controlchange', controlName);
   },
+  // Do not use these methods directly. Instead, use changeControls()
   methods: {
-    filter: {
-      init() {},
-      destroy() {},
-    },
     add: {
-      isDragging: false,
-      isCursorOverPoint: false,
-      geojson: {
-        type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [0, 0],
-          },
-        }],
-      },
       init() {
-        const { map } = hfxLights.map;
-        const canvas = map.getCanvasContainer();
-        map.setLayoutProperty('places', 'visibility', 'none');
-
-        this.geojson.features[0].geometry.coordinates = map.getCenter();
-
-        map.addSource('point', {
-          type: 'geojson',
-          data: this.geojson,
-        });
-
-        map.addLayer({
-          id: 'point',
-          type: 'circle',
-          source: 'point',
-          paint: {
-            'circle-radius': 10,
-            'circle-color': '#3887be',
-          },
-        });
-
-        // When the cursor enters a feature in the point layer, prepare for dragging.
-        map.on('mouseenter', 'point', () => {
-          map.setPaintProperty('point', 'circle-color', '#3bb2d0');
-          canvas.style.cursor = 'move';
-          this.isCursorOverPoint = true;
-          map.dragPan.disable();
-        });
-
-        map.on('mouseleave', 'point', () => {
-          map.setPaintProperty('point', 'circle-color', '#3887be');
-          canvas.style.cursor = '';
-          this.isCursorOverPoint = false;
-          map.dragPan.enable();
-        });
-
-        map.on('mousedown', this.mouseDown);
+        const { map } = hfxLights;
+        map.map.setLayoutProperty('places', 'visibility', 'none');
+        // If we initialize Add Mode without any points in the 'newplace' layer,
+        // add a marker in the center of the map
+        if (map.newPlaceGeoJson.features.length === 0) {
+          const coords = map.map.getCenter();
+          map.newPlaceGeoJson.features.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [
+                coords.lng,
+                coords.lat,
+              ],
+            },
+          });
+          map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
+        }
       },
-
-      mouseDown() {
-        if (!this.isCursorOverPoint) return;
-        this.isDragging = true;
-
-        const { map } = hfxLights.map;
-        const canvas = map.getCanvasContainer();
-
-        // Set a cursor indicator
-        canvas.style.cursor = 'grab';
-
-        // Mouse events
-        map.on('mousemove', this.onMove);
-        map.once('mouseup', this.onUp);
-      },
-
-      onMove(e) {
-        if (!this.isDragging) return;
-        const { map } = hfxLights.map;
-        const canvas = map.getCanvasContainer();
-        const coords = e.lngLat;
-
-        // Set a UI indicator for dragging.
-        canvas.style.cursor = 'grabbing';
-
-        // Update the Point feature in `geojson` coordinates
-        // and call setData to the source layer `point` on it.
-        this.geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
-        map.getSource('point').setData(this.geojson);
-      },
-
-      onUp(e) {
-        if (!this.isDragging) return;
-        const { map } = hfxLights.map;
-        const coords = e.lngLat;
-
-        console.log(coords);
-
-        this.isDragging = false;
-
-        // Unbind mouse events
-        map.off('mousemove', this.onMove);
-      },
-
       destroy() {
-        this.isDragging = false;
-        this.isCursorOverPoint = false;
-        const { map } = hfxLights.map;
-        map.setLayoutProperty('places', 'visibility', 'visible');
-        map.removeLayer('point');
+        const { map } = hfxLights;
+        map.newPlaceGeoJson.features.length = 0;
+        map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
+        map.map.setLayoutProperty('places', 'visibility', 'visible');
       },
     },
   },
