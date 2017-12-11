@@ -29,7 +29,7 @@ hfxLights.map = {
 
     this.map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v9',
+      style: 'mapbox://styles/mapbox/dark-v9',
       attributionControl: false,
       center: [-63.571389, 44.647778],
       zoom: 13,
