@@ -12,7 +12,16 @@
     </div>
 
     <div class="map__filter filter" data-control="add" style="display:none;" aria-hidden="true">
-        <button class="filter__option filter__option--cancel filter__button" data-toggle-control="filter" type="button">@svg('openiconic/location', ['width' => 12, 'height' => 12]) <span class="filter__label">Cancel</button>
-        <button class="filter__option filter__option--continue filter__button" type="button">@svg('openiconic/plus', ['width' => 12, 'height' => 12]) Add Place</button>
+        <div class="drawer drawer--collapse" id="drawer">
+            <div class="drawer__header">
+                <div class="drawer__title">Add Place</div>
+                <button class="drawer__cancel" data-toggle-control="filter" type="button">Cancel</button>
+            </div>
+            <div class="drawer__body">
+                @for ($i=0; $i < 100; $i++)
+                    {{ $i }} FORM<br>
+                @endfor
+            </div>
+        </div>
     </div>
 </div>

@@ -1,0 +1,41 @@
+.drawer {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform-origin: top;
+  transition: all 250ms ease-in-out;
+  &--collapse {
+    transform: translateY(calc(100% - #{$input-height-inner-lg} + #{$input-height-border}));
+    border-radius: $border-radius-lg $border-radius-lg 0 0;
+  }
+}
+
+.drawer__header {
+  flex: 0 0 $input-height-lg;
+  background-color: theme-color(primary);
+  color: color-yiq(theme-color(primary));
+  display: flex;
+}
+
+.drawer__title {
+  flex: 1 1 100%;
+  padding: $input-btn-padding-y-lg $input-btn-padding-x-lg;
+  font-size: $font-size-lg;
+}
+
+.drawer__cancel {
+  flex: 0 1 0;
+  @include button-variant(theme-color(primary), theme-color(primary));
+}
+
+.drawer__body {
+  flex: 1 0 100%;
+  background-color: $white;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}

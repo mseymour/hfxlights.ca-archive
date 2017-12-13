@@ -31,6 +31,11 @@ $(() => {
     $('#mapFilter').removeClass('filter--search');
   });
 
+  // set up drawer
+  $('.drawer__header', '#drawer').on('click', (e) => {
+    $(e.currentTarget).parent('.drawer').toggleClass('drawer--collapse');
+  });
+
   hfxLights.map.search.init();
   hfxLights.map.controls.init('#controls');
 });

@@ -299,6 +299,7 @@ hfxLights.map.controls = {
   methods: {
     add: {
       init() {
+        // set up map
         const { map } = hfxLights;
         map.map.setLayoutProperty('places', 'visibility', 'none');
         // If we initialize Add Mode without any points in the 'newplace' layer,
@@ -319,6 +320,7 @@ hfxLights.map.controls = {
         }
       },
       destroy() {
+        $('#drawer').removeClass('drawer--collapse');
         const { map } = hfxLights;
         map.newPlaceGeoJson.features.length = 0;
         map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
