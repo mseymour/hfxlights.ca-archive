@@ -280,8 +280,6 @@ hfxLights.controls = {
   methods: {
     add: {
       init() {
-        // set up hfxLights
-
         hfxLights.map.setLayoutProperty('places', 'visibility', 'none');
         // If we initialize Add Mode without any points in the 'newplace' layer,
         // add a marker in the center of the hfxLights
@@ -303,7 +301,7 @@ hfxLights.controls = {
         const source = document.getElementById('placeFormTemplate').innerHTML;
         const template = handlebars.compile(source);
         const formdata = {
-          coordinates: hfxLights.newPlaceGeoJson.features[0].geometry.coordinates,
+          location: hfxLights.newPlaceGeoJson.features[0].geometry.coordinates,
         };
         $('#addForm').html(template(formdata));
         // Dynamically update latitude and longitude in form
@@ -312,8 +310,7 @@ hfxLights.controls = {
       changeAddFormCoordsOnUpdate(e) {
         if (e.sourceId !== 'newPlace') return;
         const coords = e.source.data.features[0].geometry.coordinates;
-        $('[name="coordinates[lng]"]', '#addForm').val(coords.lng);
-        $('[name="coordinates[lat]"]', '#addForm').val(coords.lat);
+        $('[name="location"]', '#addForm').val(coords);
       },
       destroy() {
         $('#drawer').removeClass('drawer--collapse');
