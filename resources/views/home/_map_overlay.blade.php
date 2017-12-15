@@ -17,10 +17,7 @@
                 <div class="drawer__title">Add Place</div>
                 <button class="drawer__cancel" data-toggle-control="filter" type="button">Cancel</button>
             </div>
-            <div class="drawer__body">
-                @for ($i=0; $i < 100; $i++)
-                    {{ $i }} FORM<br>
-                @endfor
+            <div class="drawer__body" id="addForm">
             </div>
         </div>
     </div>

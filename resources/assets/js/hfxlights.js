@@ -72,8 +72,7 @@ hfxLights.map = {
       // tap on map outside and point becomes deselected
     });
 
-    this.map.on('mouseleave', 'newPlace', (e) => {
-      console.log(`mouseleave ${e.type}`);
+    this.map.on('mouseleave', 'newPlace', () => {
       const { map } = hfxLights;
       map.map.setPaintProperty('newPlace', 'circle-color', '#0000FF');
       map.map.getCanvas().style.cursor = '';
@@ -130,7 +129,7 @@ hfxLights.map = {
     const coords = e.lngLat;
 
     // do a thing with coords
-    console.log(coords);
+    console.log('eventMouseUp', coords);
 
     map.map.getCanvas().style.cursor = '';
     map.isDragging = false;
@@ -318,6 +317,21 @@ hfxLights.map.controls = {
           });
           map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
         }
+        // Initialize add form
+        const source = document.getElementById('placeFormTemplate').innerHTML;
+        const template = handlebars.compile(source);
+        const formdata = {
+          coordinates: map.newPlaceGeoJson.features[0].geometry.coordinates,
+        };
+        $('#addForm').html(template(formdata));
+        // Dynamically update latitude and longitude in form
+        map.map.on('sourcedata', hfxLights.map.controls.methods.add.changeAddFormCoordsOnUpdate);
+      },
+      changeAddFormCoordsOnUpdate(e) {
+        if (e.sourceId !== 'newPlace') return;
+        const coords = e.source.data.features[0].geometry.coordinates;
+        $('[name="coordinates[lng]"]', '#addForm').val(coords.lng);
+        $('[name="coordinates[lat]"]', '#addForm').val(coords.lat);
       },
       destroy() {
         $('#drawer').removeClass('drawer--collapse');
@@ -325,6 +339,8 @@ hfxLights.map.controls = {
         map.newPlaceGeoJson.features.length = 0;
         map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
         map.map.setLayoutProperty('places', 'visibility', 'visible');
+        // Remove specific newPlace listener
+        map.map.off('sourcedata', hfxLights.map.controls.methods.add.changeAddFormCoordsOnUpdate);
       },
     },
   },

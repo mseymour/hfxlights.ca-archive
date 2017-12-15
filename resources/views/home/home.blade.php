@@ -12,4 +12,5 @@
 @include('home.templates._place_marker')
 @include('home.templates._place_item')
 @include('home.templates._place_items')
+@include('home.templates._form')
 @endsection
