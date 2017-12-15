@@ -1,16 +1,7 @@
 /* eslint-disable no-console */
-const hfxLights = {
-  getPreciseLocation() {
-    return new Promise((resolve) => {
-      navigator.geolocation.getCurrentPosition((position) => {
-        resolve([position.coords.latitude, position.coords.longitude]);
-      });
-    });
-  },
-};
 
-hfxLights.map = {
-  map: null,
+const hfxLights = {
+  hfxLights: null,
   placesGeoJson: {},
   newPlaceGeoJson: {},
   isDragging: false,
@@ -39,19 +30,19 @@ hfxLights.map = {
       // location of the feature, with description HTML from its properties.
       .on('click', 'places', this.createPlacePopup)
       .on('mouseenter', 'places', () => {
-        hfxLights.map.map.getCanvas().style.cursor = 'pointer';
+        hfxLights.map.getCanvas().style.cursor = 'pointer';
       })
       .on('mouseleave', 'places', () => {
-        hfxLights.map.map.getCanvas().style.cursor = '';
+        hfxLights.map.getCanvas().style.cursor = '';
       });
 
     const cancelLongPress = () => {
       // Cancel long press timeouts while moving
-      const { map } = hfxLights;
-      if (map.performingLongPress) {
-        map.performingLongPress = false;
-        window.clearTimeout(map.longPressTimeout);
-        map.longPressTimeout = null;
+
+      if (hfxLights.performingLongPress) {
+        hfxLights.performingLongPress = false;
+        window.clearTimeout(hfxLights.longPressTimeout);
+        hfxLights.longPressTimeout = null;
       }
     };
 
@@ -62,84 +53,77 @@ hfxLights.map = {
       .on('pinch', cancelLongPress);
 
     this.map.on('mouseenter', 'newPlace', () => {
-      const { map } = hfxLights;
-      map.map.setPaintProperty('newPlace', 'circle-color', '#FF0000');
-      map.map.getCanvas().style.cursor = 'move';
-      map.isCursorOverPoint = true;
-      map.map.dragPan.disable();
+      hfxLights.map.setPaintProperty('newPlace', 'circle-color', '#FF0000');
+      hfxLights.map.getCanvas().style.cursor = 'move';
+      hfxLights.isCursorOverPoint = true;
+      hfxLights.map.dragPan.disable();
       // TODO: fix on touch devices:
-      // point gets selected and can be freely draged around map,
-      // tap on map outside and point becomes deselected
+      // point gets selected and can be freely draged around hfxLights,
+      // tap on hfxLights outside and point becomes deselected
     });
 
     this.map.on('mouseleave', 'newPlace', () => {
-      const { map } = hfxLights;
-      map.map.setPaintProperty('newPlace', 'circle-color', '#0000FF');
-      map.map.getCanvas().style.cursor = '';
-      map.isCursorOverPoint = false;
-      map.map.dragPan.enable();
+      hfxLights.map.setPaintProperty('newPlace', 'circle-color', '#0000FF');
+      hfxLights.map.getCanvas().style.cursor = '';
+      hfxLights.isCursorOverPoint = false;
+      hfxLights.map.dragPan.enable();
     });
 
     this.map.on('touchstart', this.eventMouseDown);
     this.map.on('mousedown', this.eventMouseDown);
   },
   eventMouseDown(e) {
-    const { map } = hfxLights;
+    if (!hfxLights.isCursorOverPoint) {
+      hfxLights.performingLongPress = true;
 
-    if (!map.isCursorOverPoint) {
-      map.performingLongPress = true;
-
-      map.longPressTimeout =
-        window.setTimeout(map.createNewPlaceMarker, map.longPressInterval, e.lngLat);
+      hfxLights.longPressTimeout =
+        window.setTimeout(hfxLights.createNewPlaceMarker, hfxLights.longPressInterval, e.lngLat);
     } else {
-      map.isDragging = true;
+      hfxLights.isDragging = true;
 
       // Set a cursor indicator
-      map.map.getCanvas().style.cursor = 'grab';
+      hfxLights.map.getCanvas().style.cursor = 'grab';
       // Mouse events
-      map.map.on('touchmove', map.eventMouseMove);
-      map.map.on('mousemove', map.eventMouseMove);
+      hfxLights.map.on('touchmove', hfxLights.eventMouseMove);
+      hfxLights.map.on('mousemove', hfxLights.eventMouseMove);
     }
-    map.map.once('touchcancel', map.eventMouseUp);
-    map.map.once('touchend', map.eventMouseUp);
-    map.map.once('mouseup', map.eventMouseUp);
+    hfxLights.map.once('touchcancel', hfxLights.eventMouseUp);
+    hfxLights.map.once('touchend', hfxLights.eventMouseUp);
+    hfxLights.map.once('mouseup', hfxLights.eventMouseUp);
   },
   eventMouseMove(e) {
-    const { map } = hfxLights;
-    map.performingLongPress = false;
-    window.clearTimeout(map.longPressTimeout);
-    map.longPressTimeout = null;
-    if (!map.isDragging) return;
+    hfxLights.performingLongPress = false;
+    window.clearTimeout(hfxLights.longPressTimeout);
+    hfxLights.longPressTimeout = null;
+    if (!hfxLights.isDragging) return;
     const coords = e.lngLat;
 
     // Set a UI indicator for dragging.
-    map.map.getCanvas().style.cursor = 'grabbing';
+    hfxLights.map.getCanvas().style.cursor = 'grabbing';
 
     // Update the newPlace feature in `geojson` coordinates
     // and call setData to the source layer `point` on it.
-    map.newPlaceGeoJson.features[0].geometry.coordinates = [coords.lng, coords.lat];
-    map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
+    hfxLights.newPlaceGeoJson.features[0].geometry.coordinates = [coords.lng, coords.lat];
+    hfxLights.map.getSource('newPlace').setData(hfxLights.newPlaceGeoJson);
   },
   eventMouseUp(e) {
-    const { map } = hfxLights;
-    window.clearTimeout(map.longPressTimeout);
-    map.longPressTimeout = null;
-    if (!map.isDragging) return;
+    window.clearTimeout(hfxLights.longPressTimeout);
+    hfxLights.longPressTimeout = null;
+    if (!hfxLights.isDragging) return;
 
     const coords = e.lngLat;
 
     // do a thing with coords
     console.log('eventMouseUp', coords);
 
-    map.map.getCanvas().style.cursor = '';
-    map.isDragging = false;
+    hfxLights.map.getCanvas().style.cursor = '';
+    hfxLights.isDragging = false;
 
     // Unbind mouse events
-    map.map.off('touchmove', map.eventMouseMove);
-    map.map.off('mousemove', map.eventMouseMove);
+    hfxLights.map.off('touchmove', hfxLights.eventMouseMove);
+    hfxLights.map.off('mousemove', hfxLights.eventMouseMove);
   },
   populateMap() {
-    const { map } = hfxLights;
     const layerPaintOptions = {
       paint: {
         'circle-radius': 12,
@@ -147,10 +131,10 @@ hfxLights.map = {
       },
     };
 
-    map.map
+    hfxLights.map
       .addSource('places', {
         type: 'geojson',
-        data: map.placesGeoJson,
+        data: hfxLights.placesGeoJson,
       })
       .addLayer(Object.assign({
         id: 'places',
@@ -161,10 +145,10 @@ hfxLights.map = {
         },
       }, layerPaintOptions));
 
-    map.map
+    hfxLights.map
       .addSource('newPlace', {
         type: 'geojson',
-        data: map.newPlaceGeoJson,
+        data: hfxLights.newPlaceGeoJson,
       })
       .addLayer(Object.assign({
         id: 'newPlace',
@@ -175,12 +159,12 @@ hfxLights.map = {
         },
       }, layerPaintOptions));
 
-    map.refreshPlaces();
+    hfxLights.refreshPlaces();
   },
   refreshPlaces() {
     axios.get('/places')
       .then((response) => {
-        hfxLights.map.map.getSource('places').setData(response.data.data);
+        hfxLights.map.getSource('places').setData(response.data.data);
       });
   },
   createPlacePopup(e) {
@@ -189,18 +173,17 @@ hfxLights.map = {
     new mapboxgl.Popup()
       .setLngLat(e.features[0].geometry.coordinates)
       .setHTML(template(e.features[0]))
-      .addTo(hfxLights.map.map);
+      .addTo(hfxLights.map);
   },
   createNewPlaceMarker(coords) {
-    const { map } = hfxLights;
     // Sometimes performingLongPress is set to false, return if needed
-    if (map.map.isMoving() || !map.performingLongPress) return;
+    if (hfxLights.map.isMoving() || !hfxLights.performingLongPress) return;
 
-    map.performingLongPress = false;
+    hfxLights.performingLongPress = false;
     // empty Features array
-    map.newPlaceGeoJson.features.length = 0;
+    hfxLights.newPlaceGeoJson.features.length = 0;
     // push new marker onto array
-    map.newPlaceGeoJson.features.push({
+    hfxLights.newPlaceGeoJson.features.push({
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -210,12 +193,12 @@ hfxLights.map = {
         ],
       },
     });
-    map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
-    map.controls.changeControls('add');
+    hfxLights.map.getSource('newPlace').setData(hfxLights.newPlaceGeoJson);
+    hfxLights.controls.changeControls('add');
   },
 };
 
-hfxLights.map.search = {
+hfxLights.search = {
   popper: null,
   init() {
     $('.filter__option--address').on('submit', this.searchSubmitEvent);
@@ -228,7 +211,7 @@ hfxLights.map.search = {
       .post($(e.target).prop('action'), {
         q: searchBox.prop('value'),
       })
-      .then(hfxLights.map.search.popupContent.bind(this, searchBox))
+      .then(hfxLights.search.popupContent.bind(this, searchBox))
       .then(() => {
         searchBox.prop('disabled', false);
       });
@@ -240,14 +223,14 @@ hfxLights.map.search = {
     const template = handlebars.compile(source);
     const content = $(template({ searchResults })).insertAfter(searchBox);
     // Make dynamic?
-    if (hfxLights.map.search.popper) {
-      hfxLights.map.search.popper.destroy();
+    if (hfxLights.search.popper) {
+      hfxLights.search.popper.destroy();
     }
-    hfxLights.map.search.popper = new Popper(searchBox, content);
+    hfxLights.search.popper = new Popper(searchBox, content);
   },
 };
 
-hfxLights.map.controls = {
+hfxLights.controls = {
   container: null,
   init(element) {
     if (typeof element === 'undefined') throw new Error('Argument is required');
@@ -255,16 +238,15 @@ hfxLights.map.controls = {
 
     // Trigger general mode change
     this.container.on('hfxlights:controlchange', (e, controlName) => {
-      const { map } = hfxLights;
       // Save current active control name for teardown
       const previousControlName = $(e.currentTarget).data('active-control');
       // Do not destroy and init controls if both are the same
       if (previousControlName === controlName) return;
 
       // Destroy control
-      if (Object.prototype.hasOwnProperty.call(map.controls.methods, previousControlName)) {
-        if (Object.prototype.hasOwnProperty.call(map.controls.methods[previousControlName], 'destroy')) {
-          map.controls.methods[previousControlName].destroy();
+      if (Object.prototype.hasOwnProperty.call(hfxLights.controls.methods, previousControlName)) {
+        if (Object.prototype.hasOwnProperty.call(hfxLights.controls.methods[previousControlName], 'destroy')) {
+          hfxLights.controls.methods[previousControlName].destroy();
         }
       }
 
@@ -275,9 +257,9 @@ hfxLights.map.controls = {
           $(e.currentTarget).data('active-control', controlName);
           controlElement.show().prop('aria-hidden', false);
           // Initialize new control
-          if (Object.prototype.hasOwnProperty.call(map.controls.methods, controlName)) {
-            if (Object.prototype.hasOwnProperty.call(map.controls.methods[controlName], 'init')) {
-              map.controls.methods[controlName].init();
+          if (Object.prototype.hasOwnProperty.call(hfxLights.controls.methods, controlName)) {
+            if (Object.prototype.hasOwnProperty.call(hfxLights.controls.methods[controlName], 'init')) {
+              hfxLights.controls.methods[controlName].init();
             }
           }
         } else {
@@ -288,24 +270,24 @@ hfxLights.map.controls = {
 
     // Toggle controls
     $('[data-toggle-control]', this.container).on('click', (e) => {
-      hfxLights.map.controls.changeControls($(e.currentTarget).data('toggle-control'));
+      hfxLights.controls.changeControls($(e.currentTarget).data('toggle-control'));
     });
   },
   changeControls(controlName) {
-    hfxLights.map.controls.container.trigger('hfxlights:controlchange', controlName);
+    hfxLights.controls.container.trigger('hfxlights:controlchange', controlName);
   },
   // Do not use these methods directly. Instead, use changeControls()
   methods: {
     add: {
       init() {
-        // set up map
-        const { map } = hfxLights;
-        map.map.setLayoutProperty('places', 'visibility', 'none');
+        // set up hfxLights
+
+        hfxLights.map.setLayoutProperty('places', 'visibility', 'none');
         // If we initialize Add Mode without any points in the 'newplace' layer,
-        // add a marker in the center of the map
-        if (map.newPlaceGeoJson.features.length === 0) {
-          const coords = map.map.getCenter();
-          map.newPlaceGeoJson.features.push({
+        // add a marker in the center of the hfxLights
+        if (hfxLights.newPlaceGeoJson.features.length === 0) {
+          const coords = hfxLights.map.getCenter();
+          hfxLights.newPlaceGeoJson.features.push({
             type: 'Feature',
             geometry: {
               type: 'Point',
@@ -315,17 +297,17 @@ hfxLights.map.controls = {
               ],
             },
           });
-          map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
+          hfxLights.map.getSource('newPlace').setData(hfxLights.newPlaceGeoJson);
         }
         // Initialize add form
         const source = document.getElementById('placeFormTemplate').innerHTML;
         const template = handlebars.compile(source);
         const formdata = {
-          coordinates: map.newPlaceGeoJson.features[0].geometry.coordinates,
+          coordinates: hfxLights.newPlaceGeoJson.features[0].geometry.coordinates,
         };
         $('#addForm').html(template(formdata));
         // Dynamically update latitude and longitude in form
-        map.map.on('sourcedata', hfxLights.map.controls.methods.add.changeAddFormCoordsOnUpdate);
+        hfxLights.map.on('sourcedata', hfxLights.controls.methods.add.changeAddFormCoordsOnUpdate);
       },
       changeAddFormCoordsOnUpdate(e) {
         if (e.sourceId !== 'newPlace') return;
@@ -335,14 +317,24 @@ hfxLights.map.controls = {
       },
       destroy() {
         $('#drawer').removeClass('drawer--collapse');
-        const { map } = hfxLights;
-        map.newPlaceGeoJson.features.length = 0;
-        map.map.getSource('newPlace').setData(map.newPlaceGeoJson);
-        map.map.setLayoutProperty('places', 'visibility', 'visible');
+
+        hfxLights.newPlaceGeoJson.features.length = 0;
+        hfxLights.map.getSource('newPlace').setData(hfxLights.newPlaceGeoJson);
+        hfxLights.map.setLayoutProperty('places', 'visibility', 'visible');
         // Remove specific newPlace listener
-        map.map.off('sourcedata', hfxLights.map.controls.methods.add.changeAddFormCoordsOnUpdate);
+        hfxLights.map.off('sourcedata', hfxLights.controls.methods.add.changeAddFormCoordsOnUpdate);
       },
     },
+  },
+};
+
+hfxLights.utils = {
+  getPreciseLocation() {
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        resolve([position.coords.latitude, position.coords.longitude]);
+      });
+    });
   },
 };
 

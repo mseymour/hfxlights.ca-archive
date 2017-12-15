@@ -5,7 +5,7 @@ require('./bootstrap');
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFya3NleW1vdXIiLCJhIjoiY2phOTB0YndoMDJ5ejMybmNheGJlc294MyJ9.nr0mzYdRzGFNBQUrJLBZMQ';
 
-hfxLights.map.init();
+hfxLights.init();
 
 $(() => {
   $('.filter__option--geo').on('click', () => {
@@ -36,6 +36,6 @@ $(() => {
     $(e.currentTarget).parent('.drawer').toggleClass('drawer--collapse');
   });
 
-  hfxLights.map.search.init();
-  hfxLights.map.controls.init('#controls');
+  hfxLights.search.init();
+  hfxLights.controls.init('#controls');
 });
