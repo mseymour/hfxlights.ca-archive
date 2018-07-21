@@ -5,21 +5,21 @@ namespace App;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
+use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
 use Illuminate\Database\Eloquent\Model;
 
 class Place extends Model implements HasMedia
 {
     use SoftDeletes;
     use HasMediaTrait;
+    use SpatialTrait;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-    protected $fillable = [
-        'display_name',
-    ];
+    protected $fillable = ['display_name'];
 
     /**
      * The attributes that should be mutated to dates.
@@ -27,6 +27,13 @@ class Place extends Model implements HasMedia
      * @var array
      */
     protected $dates = ['deleted_at'];
+
+    /**
+     * The attributes that should be mutated to spatial objects.
+     *
+     * @var array
+     */
+    protected $spatialFields = ['location'];
 
     /**
      * Get the user associated with the place
